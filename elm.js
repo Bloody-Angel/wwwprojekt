@@ -4818,6 +4818,7 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 };
 var elm$html$Html$div = _VirtualDom_node('div');
 var elm$html$Html$figure = _VirtualDom_node('figure');
+var elm$html$Html$section = _VirtualDom_node('section');
 var elm$json$Json$Encode$string = _Json_wrap;
 var elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -4854,41 +4855,50 @@ var elm$svg$Svg$Attributes$xlinkHref = function (value) {
 		_VirtualDom_noJavaScriptUri(value));
 };
 var author$project$Main$clickableImage = A2(
-	elm$html$Html$div,
+	elm$html$Html$section,
 	_List_fromArray(
 		[
-			elm$html$Html$Attributes$class('container')
+			elm$html$Html$Attributes$class('section')
 		]),
 	_List_fromArray(
 		[
 			A2(
-			elm$html$Html$figure,
+			elm$html$Html$div,
 			_List_fromArray(
 				[
-					elm$html$Html$Attributes$class('image')
+					elm$html$Html$Attributes$class('container')
 				]),
 			_List_fromArray(
 				[
 					A2(
-					elm$svg$Svg$svg,
+					elm$html$Html$figure,
 					_List_fromArray(
 						[
-							elm$svg$Svg$Attributes$width('100%'),
-							elm$svg$Svg$Attributes$viewBox('0 0 1920 1800'),
-							elm$svg$Svg$Attributes$version('1.1')
+							elm$html$Html$Attributes$class('image')
 						]),
 					_List_fromArray(
 						[
 							A2(
-							elm$svg$Svg$image,
+							elm$svg$Svg$svg,
 							_List_fromArray(
 								[
-									elm$html$Html$Attributes$width(1920),
-									elm$html$Html$Attributes$height(1800),
-									elm$html$Html$Attributes$title('Aquarium'),
-									elm$svg$Svg$Attributes$xlinkHref('/src/Bilder/Aquarium.png')
+									elm$svg$Svg$Attributes$width('80%'),
+									elm$svg$Svg$Attributes$viewBox('0 0 1920 1800'),
+									elm$svg$Svg$Attributes$version('1.1')
 								]),
-							_List_Nil)
+							_List_fromArray(
+								[
+									A2(
+									elm$svg$Svg$image,
+									_List_fromArray(
+										[
+											elm$html$Html$Attributes$width(1920),
+											elm$html$Html$Attributes$height(1800),
+											elm$html$Html$Attributes$title('Aquarium'),
+											elm$svg$Svg$Attributes$xlinkHref('/src/Bilder/Aquarium.png')
+										]),
+									_List_Nil)
+								]))
 						]))
 				]))
 		]));
