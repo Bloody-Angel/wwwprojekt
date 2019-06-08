@@ -4819,6 +4819,8 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 var elm$html$Html$div = _VirtualDom_node('div');
 var elm$html$Html$figure = _VirtualDom_node('figure');
 var elm$html$Html$section = _VirtualDom_node('section');
+var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var elm$json$Json$Encode$string = _Json_wrap;
 var elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -4827,7 +4829,6 @@ var elm$html$Html$Attributes$stringProperty = F2(
 			key,
 			elm$json$Json$Encode$string(string));
 	});
-var elm$html$Html$Attributes$align = elm$html$Html$Attributes$stringProperty('align');
 var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var elm$html$Html$Attributes$height = function (n) {
 	return A2(
@@ -4843,8 +4844,11 @@ var elm$html$Html$Attributes$width = function (n) {
 		elm$core$String$fromInt(n));
 };
 var elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
+var elm$svg$Svg$defs = elm$svg$Svg$trustedNode('defs');
 var elm$svg$Svg$image = elm$svg$Svg$trustedNode('image');
+var elm$svg$Svg$style = elm$svg$Svg$trustedNode('style');
 var elm$svg$Svg$svg = elm$svg$Svg$trustedNode('svg');
+var elm$svg$Svg$Attributes$class = _VirtualDom_attribute('class');
 var elm$svg$Svg$Attributes$version = _VirtualDom_attribute('version');
 var elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
 var elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
@@ -4883,13 +4887,26 @@ var author$project$Main$clickableImage = A2(
 							elm$svg$Svg$svg,
 							_List_fromArray(
 								[
+									elm$svg$Svg$Attributes$class('imageCenter'),
 									elm$svg$Svg$Attributes$width('80%'),
 									elm$svg$Svg$Attributes$viewBox('0 0 1920 1800'),
-									elm$svg$Svg$Attributes$version('1.1'),
-									elm$html$Html$Attributes$align('center')
+									elm$svg$Svg$Attributes$version('1.1')
 								]),
 							_List_fromArray(
 								[
+									A2(
+									elm$svg$Svg$defs,
+									_List_Nil,
+									_List_fromArray(
+										[
+											A2(
+											elm$svg$Svg$style,
+											_List_Nil,
+											_List_fromArray(
+												[
+													elm$html$Html$text('.imageCenter  {\r\n                                                    display: block;\r\n                                                    margin-left: auto;\r\n                                                    margin-right: auto;\r\n                                                    }')
+												]))
+										])),
 									A2(
 									elm$svg$Svg$image,
 									_List_fromArray(

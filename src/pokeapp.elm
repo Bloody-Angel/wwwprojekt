@@ -47,11 +47,18 @@ clickableImage =
     section[ class "section" ]
         [ div [ class "container" ]
             [ Html.figure [ class "image" ]
-                [ svg [ Svg.Attributes.width "80%", viewBox "0 0 1920 1800", version "1.1"]
-                    ([ image [ Html.Attributes.width 1920, Html.Attributes.height 1800, Html.Attributes.title "Aquarium", Svg.Attributes.xlinkHref "/src/Bilder/Aquarium.png" ] []
-                     ]
-
-                    )
+                [ svg [Svg.Attributes.class "imageCenter", Svg.Attributes.width "80%", viewBox "0 0 1920 1800", version "1.1"]
+                    [Svg.defs[]
+                        [Svg.style[]
+                            [ text """.imageCenter  {
+                                                    display: block;
+                                                    margin-left: auto;
+                                                    margin-right: auto;
+                                                    }"""
+                            ]        
+                        ]
+                    ,image [ Html.Attributes.width 1920, Html.Attributes.height 1800, Html.Attributes.title "Aquarium", Svg.Attributes.xlinkHref "/src/Bilder/Aquarium.png" ] []
+                    ]
                 ]
             ]
         ]
