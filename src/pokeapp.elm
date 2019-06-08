@@ -9,31 +9,33 @@ import Svg.Attributes exposing (viewBox, version)
 import Json.Decode
 
 type alias Model =
-    { count : Int }
+    { shapes : List(Shape) }
 
 
 
 initialModel : Model
 initialModel =
-    { count = 0 }
+    { shapes = []}
 
 
 type Msg
-    = Increment
-    | Decrement
+    = PolyClicked String
+    | ButtonClicked
 
 type Shape  
-    = Polygon String
+    = Polygon String String String  --pokedexNummer, shiny?, polyPunkte
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        Increment ->
-            { model | count = model.count + 1 }
+        PolyClicked id->
+            --TODO
+            model
 
-        Decrement ->
-            { model | count = model.count - 1 }
+        ButtonClicked ->
+            --TODO
+            model
 
 
 view : Model -> Html Msg
