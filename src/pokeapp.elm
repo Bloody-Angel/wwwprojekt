@@ -6,25 +6,33 @@ import Html.Events exposing (onClick)
 import Html.Attributes exposing (class)
 import Svg exposing (svg, image)
 import Svg.Attributes exposing (viewBox, version)
-import Json.Decode
+import Json.Decode exposing (Decoder)
+import File
+
+main : Program () Model Msg
+main =
+    Browser.sandbox
+        { init = initialModel
+        , view = view
+        , update = update
+        }
 
 type alias Model =
-    { shapes : List(Shape) }
-
-
+    { shapes : List(Polygon) }
 
 initialModel : Model
 initialModel =
     { shapes = []}
 
-
 type Msg
     = PolyClicked String
     | ButtonClicked
 
-type Shape  
-    = Polygon String String String  --pokedexNummer, shiny?, polyPunkte
-
+type alias Polygon = 
+    { dexId : String 
+    ,shiny : String 
+    ,polypoints : String
+    }  
 
 update : Msg -> Model -> Model
 update msg model =
@@ -32,11 +40,9 @@ update msg model =
         PolyClicked id->
             --TODO
             model
-
         ButtonClicked ->
             --TODO
             model
-
 
 view : Model -> Html Msg
 view model =
@@ -44,6 +50,16 @@ view model =
         [ clickableImage
         ]
 
+readSinglePoly : Decoder Polygon
+readSinglePoly =
+    Json.Decode.map3 Polygon
+        (Json.Decode.field "Pokedex No" Json.Decode.string)
+        (Json.Decode.field "Zusatzinfo" Json.Decode.string)
+        (Json.Decode.field "Polygon points" Json.Decode.string)
+
+readPolys : String -> List(Polygon)
+readPolys name = 
+    Json.Decode.list readSinglePoly
 
 clickableImage :  Html Msg
 clickableImage =
@@ -66,15 +82,3 @@ clickableImage =
                 ]
             ]
         ]
-
-
-
-
-
-main : Program () Model Msg
-main =
-    Browser.sandbox
-        { init = initialModel
-        , view = view
-        , update = update
-        }
