@@ -4,7 +4,8 @@ import Browser
 import Html exposing (Html, button, div, text, section)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (class)
-import Svg exposing (svg)
+import Svg exposing (svg, image)
+import Svg.Attributes exposing (viewBox, version)
 
 type alias Model =
     { count : Int }
@@ -37,23 +38,22 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ 
+        [ clickableImage
         ]
 
 
-clickableImage : List Shape -> Html Msg
-clickableImage shapeList =
-    section [ class "section" ]
-        [ div [ class "container" ]
+clickableImage :  Html Msg
+clickableImage =
+        div [ class "container" ]
             [ Html.figure [ class "image" ]
                 [ svg [ Svg.Attributes.width "100%", viewBox "0 0 1920 1800", version "1.1" ]
-                    ([ image [ width 1920, height 1800, title "Aquarium", xlinkHref "/Bilder/Aquarium.png" ] []
+                    ([ image [ Html.Attributes.width 1920, Html.Attributes.height 1800, Html.Attributes.title "Aquarium", Svg.Attributes.xlinkHref "/src/Bilder/Aquarium.png" ] []
                      ]
-                        ++ List.map drawShape shapeList
+
                     )
                 ]
             ]
-        ]
+        
 
 
      {-    <section class="section">
