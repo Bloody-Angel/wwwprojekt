@@ -4887,7 +4887,7 @@ var author$project$Main$clickableImage = A2(
 							elm$svg$Svg$svg,
 							_List_fromArray(
 								[
-									elm$svg$Svg$Attributes$class('imageCenter'),
+									elm$svg$Svg$Attributes$class('viewBoxCenter'),
 									elm$svg$Svg$Attributes$width('80%'),
 									elm$svg$Svg$Attributes$viewBox('0 0 1920 1800'),
 									elm$svg$Svg$Attributes$version('1.1')
@@ -4904,7 +4904,7 @@ var author$project$Main$clickableImage = A2(
 											_List_Nil,
 											_List_fromArray(
 												[
-													elm$html$Html$text('.imageCenter  {\r\n                                                    display: block;\r\n                                                    margin-left: auto;\r\n                                                    margin-right: auto;\r\n                                                    }')
+													elm$html$Html$text('.viewBoxCenter  {\r\n                                                    display: block;\r\n                                                    margin-left: auto;\r\n                                                    margin-right: auto;\r\n                                                    }')
 												]))
 										])),
 									A2(

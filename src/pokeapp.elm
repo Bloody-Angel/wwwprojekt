@@ -6,6 +6,7 @@ import Html.Events exposing (onClick)
 import Html.Attributes exposing (class)
 import Svg exposing (svg, image)
 import Svg.Attributes exposing (viewBox, version)
+import Json.Decode
 
 type alias Model =
     { count : Int }
@@ -47,10 +48,11 @@ clickableImage =
     section[ class "section" ]
         [ div [ class "container" ]
             [ Html.figure [ class "image" ]
-                [ svg [Svg.Attributes.class "imageCenter", Svg.Attributes.width "80%", viewBox "0 0 1920 1800", version "1.1"]
+                [ svg [Svg.Attributes.class "viewBoxCenter", Svg.Attributes.width "80%", viewBox "0 0 1920 1800", version "1.1"]
                     [Svg.defs[]
                         [Svg.style[]
-                            [ text """.imageCenter  {
+                            --css für mittige viewBox
+                            [ text """.viewBoxCenter  {
                                                     display: block;
                                                     margin-left: auto;
                                                     margin-right: auto;
