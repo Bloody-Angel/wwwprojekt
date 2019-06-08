@@ -4827,6 +4827,7 @@ var elm$html$Html$Attributes$stringProperty = F2(
 			key,
 			elm$json$Json$Encode$string(string));
 	});
+var elm$html$Html$Attributes$align = elm$html$Html$Attributes$stringProperty('align');
 var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var elm$html$Html$Attributes$height = function (n) {
 	return A2(
@@ -4884,7 +4885,8 @@ var author$project$Main$clickableImage = A2(
 								[
 									elm$svg$Svg$Attributes$width('80%'),
 									elm$svg$Svg$Attributes$viewBox('0 0 1920 1800'),
-									elm$svg$Svg$Attributes$version('1.1')
+									elm$svg$Svg$Attributes$version('1.1'),
+									elm$html$Html$Attributes$align('center')
 								]),
 							_List_fromArray(
 								[
