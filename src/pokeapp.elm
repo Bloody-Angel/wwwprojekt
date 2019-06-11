@@ -6,23 +6,32 @@ import Html.Events exposing (onClick)
 import Html.Attributes exposing (class)
 import Svg exposing (svg, image)
 import Svg.Attributes exposing (viewBox, version)
+import List
 import Json.Decode exposing (Decoder)
 import File
 
 main : Program () Model Msg
 main =
-    Browser.sandbox
+    Browser.element
         { init = initialModel
         , view = view
         , update = update
+        ,subscriptions = subscriptions
         }
 
 type alias Model =
     { shapes : List(Polygon) }
 
-initialModel : Model
-initialModel =
-    { shapes = []}
+initialModel : () ->(Model ,Cmd Msg)
+initialModel _ =
+    (
+        { shapes = []}
+        ,Cmd.none
+    )
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Sub.none
 
 jsondatei : String
 jsondatei =
@@ -73,24 +82,24 @@ jsondatei =
     """
 
 type Msg
-    = PolyClicked String
+    = PolyClicked String String --erster String: Pokedex ID, zweiter String: Zusatzinfo
     | ButtonClicked
 
 type alias Polygon = 
-    { dexId : String 
+    {dexId : String 
     ,shiny : String 
     ,polypoints : String
     }  
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
-        PolyClicked id->
+        PolyClicked id info->
             --TODO
-            model
+            (model, Cmd.none)
         ButtonClicked ->
             --TODO
-            model
+            (model, Cmd.none)
 
 view : Model -> Html Msg
 view model =
@@ -98,6 +107,7 @@ view model =
         [ clickableImage
         ]
 
+-- Decoder fuer json-Polygone zu Polygonen
 readSinglePoly : Decoder Polygon
 readSinglePoly =
     Json.Decode.map3 Polygon
@@ -105,28 +115,56 @@ readSinglePoly =
         (Json.Decode.field "Zusatzinfo" Json.Decode.string)
         (Json.Decode.field "Polygon points" Json.Decode.string)
 
-readPolys : String -> Result Json.Decode.Error List(Polygon)
-readPolys str = 
-    Json.Decode.decodeString (Json.Decode.list readSinglePoly) str
 
+-- bekommt String (json Liste von  Polygonen) uebergeben, erstellt Liste von Polygonen
+readPolys : String -> List(Polygon)
+readPolys str = 
+    let result = Json.Decode.decodeString (Json.Decode.list readSinglePoly) str
+    in 
+        case result of
+            Ok wert ->
+                wert
+            Err error ->
+                []
+
+
+--erstellt aus einem Polygon eine Html Msg mit einem svg polygon
+svgPoly : Polygon ->Svg.Svg Msg
+svgPoly poly= 
+    Svg.polygon[Svg.Attributes.points poly.polypoints, Svg.Attributes.class "polygon" , onClick (PolyClicked poly.dexId poly.shiny) ][]
+
+
+
+--erstellt das Bild und die Polygone   
 clickableImage :  Html Msg
 clickableImage = 
     section[ class "section" ]
-        [ div [ class "container" ]
-            [ Html.figure [ class "image" ]
-                [ svg [Svg.Attributes.class "viewBoxCenter", Svg.Attributes.width "80%", viewBox "0 0 1920 1800", version "1.1"]
-                    [Svg.defs[]
+        [div [ class "container" ]
+            [Html.figure [ class "image" ]
+                [svg [Svg.Attributes.class "viewBoxCenter", Svg.Attributes.width "80%", viewBox "0 0 1920 1080", version "1.1"]
+                    ([Svg.defs[]
                         [Svg.style[]
                             --css für mittige viewBox
-                            [ text """.viewBoxCenter  {
+                            [text """   .viewBoxCenter {
                                                     display: block;
                                                     margin-left: auto;
                                                     margin-right: auto;
-                                                    }"""
+                                                    }
+                                                    
+                                        .polygon { 
+                                                    fill: black;   
+                                                    fill-opacity:0;
+                                                }
+                                         .polygon:hover {
+                                                    fill: white;
+                                                    fill-opacity:0.03;
+                                        }"""
                             ]        
                         ]
-                    ,image [ Html.Attributes.width 1920, Html.Attributes.height 1800, Html.Attributes.title "Aquarium", Svg.Attributes.xlinkHref "/src/Bilder/Aquarium.png" ] []
+                    ,image [ Html.Attributes.width 1920, Html.Attributes.height 1080, Html.Attributes.title "Aquarium", Svg.Attributes.xlinkHref "/src/Bilder/Aquarium.png" ] []
                     ]
+                    ++(List.map svgPoly (readPolys jsondatei))
+                    )
                 ]
             ]
         ]
