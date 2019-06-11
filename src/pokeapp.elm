@@ -9,6 +9,10 @@ import Svg.Attributes exposing (viewBox, version)
 import List
 import Json.Decode exposing (Decoder)
 import File
+import Http
+import Set
+import Random
+import Random.List exposing (choose)
 
 main : Program () Model Msg
 main =
@@ -20,13 +24,19 @@ main =
         }
 
 type alias Model =
-    { shapes : List(Polygon) }
+    {shapes : List(Polygon)
+    ,zustand : Zustand
+    }
 
 initialModel : () ->(Model ,Cmd Msg)
 initialModel _ =
     (
-        { shapes = []}
-        ,Cmd.none
+        {shapes = []
+        ,zustand = Success}
+        ,Http.get
+            {url = "/src/Maps/Aquarium.json"
+            ,expect = Http.expectString GotText
+            }
     )
 
 subscriptions : Model -> Sub Msg
@@ -84,12 +94,17 @@ jsondatei =
 type Msg
     = PolyClicked String String --erster String: Pokedex ID, zweiter String: Zusatzinfo
     | ButtonClicked
+    | GotText (Result Http.Error String) 
 
 type alias Polygon = 
     {dexId : String 
     ,shiny : String 
     ,polypoints : String
-    }  
+    }
+    
+type Zustand 
+    = Success
+    | Failure
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -100,11 +115,17 @@ update msg model =
         ButtonClicked ->
             --TODO
             (model, Cmd.none)
+        GotText res ->
+            case res of
+                Ok jsonDatei -> 
+                    ({model|shapes = readPolys jsondatei, zustand = Success}, Cmd.none)
+                Err _ ->
+                    ({model|shapes = [], zustand = Failure}, Cmd.none)
 
 view : Model -> Html Msg
 view model =
     div []
-        [ clickableImage
+        [clickableImage model
         ]
 
 -- Decoder fuer json-Polygone zu Polygonen
@@ -136,8 +157,8 @@ svgPoly poly=
 
 
 --erstellt das Bild und die Polygone   
-clickableImage :  Html Msg
-clickableImage = 
+clickableImage : Model -> Html Msg
+clickableImage model = 
     section[ class "section" ]
         [div [ class "container" ]
             [Html.figure [ class "image" ]
@@ -163,8 +184,17 @@ clickableImage =
                         ]
                     ,image [ Html.Attributes.width 1920, Html.Attributes.height 1080, Html.Attributes.title "Aquarium", Svg.Attributes.xlinkHref "/src/Bilder/Aquarium.png" ] []
                     ]
-                    ++(List.map svgPoly (readPolys jsondatei))
+                    ++(List.map svgPoly model.shapes)
                     )
                 ]
             ]
         ]
+{-
+getID : Polygon -> String
+getID poly =
+    poly.dexId
+
+zufallsID : Model -> String
+zufallsID model =
+    toStr (choose (Set.toList (Set.fromList (List.map getID model.shapes))))
+-}
