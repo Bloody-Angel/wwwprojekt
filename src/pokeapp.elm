@@ -105,12 +105,12 @@ readSinglePoly =
         (Json.Decode.field "Zusatzinfo" Json.Decode.string)
         (Json.Decode.field "Polygon points" Json.Decode.string)
 
-readPolys : String -> List(Polygon)
-readPolys name = 
-    Json.Decode.list readSinglePoly
+readPolys : String -> Result Json.Decode.Error List(Polygon)
+readPolys str = 
+    Json.Decode.decodeString (Json.Decode.list readSinglePoly) str
 
 clickableImage :  Html Msg
-clickableImage =
+clickableImage = 
     section[ class "section" ]
         [ div [ class "container" ]
             [ Html.figure [ class "image" ]
