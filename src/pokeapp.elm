@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, button, div, text, section)
+import Html exposing (Html, button, div, text, section, a)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (class)
 import Svg exposing (svg, image)
@@ -125,7 +125,17 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [clickableImage model
+        [buttons model
+        ,clickableImage model
+        ]
+
+buttons : Model -> Html Msg
+buttons model =
+    div [class "nes-container is-rounded randInnen"
+        ]
+        [a  [class "nes-btn"] 
+            [text "generate question"
+            ]
         ]
 
 -- Decoder fuer json-Polygone zu Polygonen
@@ -189,12 +199,12 @@ clickableImage model =
                 ]
             ]
         ]
-{-
+
 getID : Polygon -> String
 getID poly =
     poly.dexId
 
-zufallsID : Model -> String
+zufallsID : Model -> Random.Generator (Maybe String, List String)
 zufallsID model =
-    toStr (choose (Set.toList (Set.fromList (List.map getID model.shapes))))
--}
+    (choose (Set.toList (Set.fromList (List.map getID model.shapes))))
+
