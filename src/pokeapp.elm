@@ -86,7 +86,7 @@ view : Model -> Html Msg
 view model =
     div [class "inhalt"]
         [buttons model
-        ,ashCatchThem "Hallo! Ich bin Ash :)"
+        ,ashCatchThem (ashsText model)
         ,clickableImage model
         ]
 
