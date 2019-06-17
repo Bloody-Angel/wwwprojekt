@@ -18,14 +18,8 @@ type alias Model
     =
     {shapes : List(Polygon)
     ,zustand : Zustand
-    ,searchedPokeId : Maybe String
+    ,aktiveSuche : Maybe Suche
     }
-
-type Msg 
-    = PolyClicked String String --erster String: Pokedex ID, zweiter String: Zusatzinfo
-    | PokeGenerateClicked
-    | PokeGenerated (Maybe String, List String)
-    | GotText (Result Http.Error String) 
 
 type alias Polygon
      =
@@ -33,10 +27,24 @@ type alias Polygon
     ,shiny : String 
     ,polypoints : String
     }
-    
+
 type Zustand 
     = Success
     | Failure
+
+type alias Suche 
+    =
+    {searchedPokeId : String 
+    ,foundIt : Maybe Bool
+    ,pokeInfo : Maybe String
+    }
+    
+type Msg 
+    = PolyClicked String String --erster String: Pokedex ID, zweiter String: Zusatzinfo
+    | PokeGenerateClicked
+    | PokeGenerated (Maybe String, List String)
+    | GotPokemonInfo (Result Http.Error String)
+    | GotImageMap (Result Http.Error String) 
 
 main : Program () Model Msg
 main =
@@ -52,10 +60,10 @@ initialModel _ =
     (
         {shapes = []
         ,zustand = Success
-        ,searchedPokeId = Nothing}
+        ,aktiveSuche = Nothing}
         ,Http.get
             {url = "/src/Maps/Aquarium.json"
-            ,expect = Http.expectString GotText
+            ,expect = Http.expectString GotImageMap
             }
     )
 
@@ -74,10 +82,29 @@ update msg model =
         PokeGenerated (id,liste)->
             case id of 
                 Just value -> 
-                     ({model|searchedPokeId = id}, Cmd.none)
+                    ({model|aktiveSuche = Just {searchedPokeId=value, foundIt=Nothing, pokeInfo=Nothing}}
+                    , Http.get
+                        {url = "https://pokeapi.co/api/v2/pokemon/"++value
+                        ,expect = Http.expectString GotPokemonInfo
+                        }
+                    )
                 Nothing -> 
                     ({model|zustand = Failure}, Cmd.none)
-        GotText res ->
+        GotPokemonInfo infojson ->
+            case infojson of
+                Ok jsondatei -> 
+                    case model.aktiveSuche of
+                            Nothing ->
+                                ({model|zustand = Failure}, Cmd.none)
+                            Just value -> 
+                                let 
+                                    oldaktiveSuche = value
+                                    newaktiveSuche = {oldaktiveSuche | pokeInfo=Just jsondatei}
+                                in
+                                    ({model|aktiveSuche = Just newaktiveSuche} ,Cmd.none)
+                Err _ ->
+                    ({model|shapes = [], zustand = Failure}, Cmd.none)
+        GotImageMap res ->
             case res of
                 Ok jsondatei -> 
                     ({model|shapes = readPolys jsondatei, zustand = Success}, Cmd.none)
@@ -97,7 +124,7 @@ buttons model =
     div [class "nes-container is-rounded inhaltsElemente"
         ]
         [a  [class "nes-btn", onClick PokeGenerateClicked] 
-            [text "generate question"
+            [text "Ask me a question!"
             ]
         ]
 
@@ -114,13 +141,22 @@ ashCatchThem str =
 
 ashsText : Model ->  String
 ashsText model =
-    case model.searchedPokeId of
-        Nothing -> 
-            "Hello, I'm Ash. If you want, I'll quiz you on you pokemon knowledge. Just klick the Button above me."
-        Just id ->
-            "Search for "++id++" in this picture."  
+    case model.zustand of
+        Failure ->
+            "Oh, seems like an error happened somewhere."
+        Success -> 
+            case model.aktiveSuche of
+                Nothing -> 
+                    "Hello, I'm Ash. If you want, I'll quiz you on your pokemon knowledge. Just klick the Button above me."
+                Just suche ->
+                    case suche.foundIt of
+                        Nothing -> 
+                            "Search for "++suche.searchedPokeId++" in this picture."  
+                        Just True ->
+                            "Great, that's right!"
+                        Just False ->
+                            "Oh, that's not "++suche.searchedPokeId++ ", but you can try again."
 
-            
 --erstellt das Bild und die Polygone   
 clickableImage : Model -> Html Msg
 clickableImage model = 
