@@ -2489,6 +2489,89 @@ function _Http_track(router, xhr, tracker)
 }
 
 
+var _Bitwise_and = F2(function(a, b)
+{
+	return a & b;
+});
+
+var _Bitwise_or = F2(function(a, b)
+{
+	return a | b;
+});
+
+var _Bitwise_xor = F2(function(a, b)
+{
+	return a ^ b;
+});
+
+function _Bitwise_complement(a)
+{
+	return ~a;
+};
+
+var _Bitwise_shiftLeftBy = F2(function(offset, a)
+{
+	return a << offset;
+});
+
+var _Bitwise_shiftRightBy = F2(function(offset, a)
+{
+	return a >> offset;
+});
+
+var _Bitwise_shiftRightZfBy = F2(function(offset, a)
+{
+	return a >>> offset;
+});
+
+
+
+function _Time_now(millisToPosix)
+{
+	return _Scheduler_binding(function(callback)
+	{
+		callback(_Scheduler_succeed(millisToPosix(Date.now())));
+	});
+}
+
+var _Time_setInterval = F2(function(interval, task)
+{
+	return _Scheduler_binding(function(callback)
+	{
+		var id = setInterval(function() { _Scheduler_rawSpawn(task); }, interval);
+		return function() { clearInterval(id); };
+	});
+});
+
+function _Time_here()
+{
+	return _Scheduler_binding(function(callback)
+	{
+		callback(_Scheduler_succeed(
+			A2(elm$time$Time$customZone, -(new Date().getTimezoneOffset()), _List_Nil)
+		));
+	});
+}
+
+
+function _Time_getZoneName()
+{
+	return _Scheduler_binding(function(callback)
+	{
+		try
+		{
+			var name = elm$time$Time$Name(Intl.DateTimeFormat().resolvedOptions().timeZone);
+		}
+		catch (e)
+		{
+			var name = elm$time$Time$Offset(new Date().getTimezoneOffset());
+		}
+		callback(_Scheduler_succeed(name));
+	});
+}
+
+
+
 
 // HELPERS
 
@@ -5852,7 +5935,9 @@ var author$project$Main$subscriptions = function (model) {
 	return elm$core$Platform$Sub$none;
 };
 var author$project$Main$Failure = {$: 'Failure'};
-var author$project$Main$jsondatei = '\r\n    [\r\n	{\r\n		"Pokedex No":"258",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"368 335,375 342,380 349,384 344,377 335,389 331,386 314,395 311,406 315,403 330,410 335,412 348,405 352,406 362,378 364,370 362,361 352,364 339"\r\n	}\r\n	,{\r\n		"Pokedex No":"728",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"507 351,514 351,523 349,538 350,540 336,530 336,528 332,542 324,540 316,533 319,525 316,525 309,532 304,534 296,543 288,554 286,568 289,577 296,585 293,592 300,591 306,586 308,589 316,590 322,585 324,581 323,578 331,587 341,580 339,591 349,610 353,609 360,588 358,576 351,572 351,570 357,561 358,557 363,539 361,510 358"\r\n	}\r\n	,{\r\n		"Pokedex No":"489",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"414 507,427 501,451 491,476 485,489 482,505 481,511 486,515 489,508 492,501 500,495 507,494 513,494 525,503 532,513 536,507 540,499 541,493 541,490 542,490 549,494 554,506 556,513 551,518 558,527 563,539 552,546 554,557 549,562 545,563 539,558 536,553 537,541 540,538 538,546 536,556 527,556 517,551 505,544 494,532 489,536 489,543 485,546 479,539 472,531 470,512 469,507 476,495 475,451 485,429 493,413 504,376 532"\r\n	}\r\n	,{\r\n		"Pokedex No":"393",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"670 275,671 281,683 283,687 280,695 278,692 273,697 263,693 251,700 253,703 244,702 231,694 221,685 216,673 216,664 224,660 236,662 240,664 252,660 256,657 265,660 269,668 270"\r\n	}\r\n	,{\r\n		"Pokedex No":"349",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"1252 943,1293 938,1330 963,1328 978,1338 979,1344 994,1378 994,1369 971,1412 967,1426 962,1425 950,1421 931,1408 887,1365 858,1373 827,1312 821,1325 870,1297 883,1282 855,1249 867,1241 911"\r\n	}\r\n	,{\r\n		"Pokedex No":"129",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"734 413,746 427,761 411,766 413,765 427,800 439,808 417,821 417,829 437,842 433,846 421,837 418,833 402,833 383,821 365,798 355,798 335,786 338,769 327,773 349,760 349,764 369,754 373,749 357,737 354,738 389"\r\n	}\r\n	,{\r\n		"Pokedex No":"129",\r\n		"Zusatzinfo":"s",\r\n		"Polygon points":"1480 514,1489 501,1522 513,1525 502,1541 501,1546 516,1554 516,1553 488,1558 481,1545 460,1529 456,1513 437,1494 468,1470 454,1473 481,1470 509"\r\n	}\r\n	,{\r\n		"Pokedex No":"79",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"930 393,934 401,940 397,953 400,962 401,969 397,974 401,985 401,989 393,1002 389,1002 373,994 361,978 357,966 360,958 356,945 360,946 349,960 341,958 336,936 333,925 364,928 377"\r\n	}\r\n]\r\n\r\n    ';
+var author$project$Main$PokeGenerated = function (a) {
+	return {$: 'PokeGenerated', a: a};
+};
 var author$project$Main$Polygon = F3(
 	function (dexId, shiny, polypoints) {
 		return {dexId: dexId, polypoints: polypoints, shiny: shiny};
@@ -5881,8 +5966,401 @@ var author$project$Main$readPolys = function (str) {
 		return _List_Nil;
 	}
 };
+var author$project$Main$getID = function (poly) {
+	return poly.dexId;
+};
+var elm$core$List$map = F2(
+	function (f, xs) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, acc) {
+					return A2(
+						elm$core$List$cons,
+						f(x),
+						acc);
+				}),
+			_List_Nil,
+			xs);
+	});
+var elm$core$Set$Set_elm_builtin = function (a) {
+	return {$: 'Set_elm_builtin', a: a};
+};
+var elm$core$Set$empty = elm$core$Set$Set_elm_builtin(elm$core$Dict$empty);
+var elm$core$Set$insert = F2(
+	function (key, _n0) {
+		var dict = _n0.a;
+		return elm$core$Set$Set_elm_builtin(
+			A3(elm$core$Dict$insert, key, _Utils_Tuple0, dict));
+	});
+var elm$core$Set$fromList = function (list) {
+	return A3(elm$core$List$foldl, elm$core$Set$insert, elm$core$Set$empty, list);
+};
+var elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3(elm$core$List$foldr, elm$core$List$cons, ys, xs);
+		}
+	});
+var elm$core$List$drop = F2(
+	function (n, list) {
+		drop:
+		while (true) {
+			if (n <= 0) {
+				return list;
+			} else {
+				if (!list.b) {
+					return list;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs;
+					n = $temp$n;
+					list = $temp$list;
+					continue drop;
+				}
+			}
+		}
+	});
+var elm$core$List$isEmpty = function (xs) {
+	if (!xs.b) {
+		return true;
+	} else {
+		return false;
+	}
+};
+var elm$core$List$takeReverse = F3(
+	function (n, list, kept) {
+		takeReverse:
+		while (true) {
+			if (n <= 0) {
+				return kept;
+			} else {
+				if (!list.b) {
+					return kept;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs,
+						$temp$kept = A2(elm$core$List$cons, x, kept);
+					n = $temp$n;
+					list = $temp$list;
+					kept = $temp$kept;
+					continue takeReverse;
+				}
+			}
+		}
+	});
+var elm$core$List$takeTailRec = F2(
+	function (n, list) {
+		return elm$core$List$reverse(
+			A3(elm$core$List$takeReverse, n, list, _List_Nil));
+	});
+var elm$core$List$takeFast = F3(
+	function (ctr, n, list) {
+		if (n <= 0) {
+			return _List_Nil;
+		} else {
+			var _n0 = _Utils_Tuple2(n, list);
+			_n0$1:
+			while (true) {
+				_n0$5:
+				while (true) {
+					if (!_n0.b.b) {
+						return list;
+					} else {
+						if (_n0.b.b.b) {
+							switch (_n0.a) {
+								case 1:
+									break _n0$1;
+								case 2:
+									var _n2 = _n0.b;
+									var x = _n2.a;
+									var _n3 = _n2.b;
+									var y = _n3.a;
+									return _List_fromArray(
+										[x, y]);
+								case 3:
+									if (_n0.b.b.b.b) {
+										var _n4 = _n0.b;
+										var x = _n4.a;
+										var _n5 = _n4.b;
+										var y = _n5.a;
+										var _n6 = _n5.b;
+										var z = _n6.a;
+										return _List_fromArray(
+											[x, y, z]);
+									} else {
+										break _n0$5;
+									}
+								default:
+									if (_n0.b.b.b.b && _n0.b.b.b.b.b) {
+										var _n7 = _n0.b;
+										var x = _n7.a;
+										var _n8 = _n7.b;
+										var y = _n8.a;
+										var _n9 = _n8.b;
+										var z = _n9.a;
+										var _n10 = _n9.b;
+										var w = _n10.a;
+										var tl = _n10.b;
+										return (ctr > 1000) ? A2(
+											elm$core$List$cons,
+											x,
+											A2(
+												elm$core$List$cons,
+												y,
+												A2(
+													elm$core$List$cons,
+													z,
+													A2(
+														elm$core$List$cons,
+														w,
+														A2(elm$core$List$takeTailRec, n - 4, tl))))) : A2(
+											elm$core$List$cons,
+											x,
+											A2(
+												elm$core$List$cons,
+												y,
+												A2(
+													elm$core$List$cons,
+													z,
+													A2(
+														elm$core$List$cons,
+														w,
+														A3(elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
+									} else {
+										break _n0$5;
+									}
+							}
+						} else {
+							if (_n0.a === 1) {
+								break _n0$1;
+							} else {
+								break _n0$5;
+							}
+						}
+					}
+				}
+				return list;
+			}
+			var _n1 = _n0.b;
+			var x = _n1.a;
+			return _List_fromArray(
+				[x]);
+		}
+	});
+var elm$core$List$take = F2(
+	function (n, list) {
+		return A3(elm$core$List$takeFast, 0, n, list);
+	});
+var elm$random$Random$Generator = function (a) {
+	return {$: 'Generator', a: a};
+};
+var elm$random$Random$constant = function (value) {
+	return elm$random$Random$Generator(
+		function (seed) {
+			return _Utils_Tuple2(value, seed);
+		});
+};
+var elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var elm$core$Bitwise$and = _Bitwise_and;
+var elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
+var elm$random$Random$Seed = F2(
+	function (a, b) {
+		return {$: 'Seed', a: a, b: b};
+	});
+var elm$random$Random$next = function (_n0) {
+	var state0 = _n0.a;
+	var incr = _n0.b;
+	return A2(elm$random$Random$Seed, ((state0 * 1664525) + incr) >>> 0, incr);
+};
+var elm$core$Bitwise$xor = _Bitwise_xor;
+var elm$random$Random$peel = function (_n0) {
+	var state = _n0.a;
+	var word = (state ^ (state >>> ((state >>> 28) + 4))) * 277803737;
+	return ((word >>> 22) ^ word) >>> 0;
+};
+var elm$random$Random$int = F2(
+	function (a, b) {
+		return elm$random$Random$Generator(
+			function (seed0) {
+				var _n0 = (_Utils_cmp(a, b) < 0) ? _Utils_Tuple2(a, b) : _Utils_Tuple2(b, a);
+				var lo = _n0.a;
+				var hi = _n0.b;
+				var range = (hi - lo) + 1;
+				if (!((range - 1) & range)) {
+					return _Utils_Tuple2(
+						(((range - 1) & elm$random$Random$peel(seed0)) >>> 0) + lo,
+						elm$random$Random$next(seed0));
+				} else {
+					var threshhold = (((-range) >>> 0) % range) >>> 0;
+					var accountForBias = function (seed) {
+						accountForBias:
+						while (true) {
+							var x = elm$random$Random$peel(seed);
+							var seedN = elm$random$Random$next(seed);
+							if (_Utils_cmp(x, threshhold) < 0) {
+								var $temp$seed = seedN;
+								seed = $temp$seed;
+								continue accountForBias;
+							} else {
+								return _Utils_Tuple2((x % range) + lo, seedN);
+							}
+						}
+					};
+					return accountForBias(seed0);
+				}
+			});
+	});
+var elm$random$Random$map = F2(
+	function (func, _n0) {
+		var genA = _n0.a;
+		return elm$random$Random$Generator(
+			function (seed0) {
+				var _n1 = genA(seed0);
+				var a = _n1.a;
+				var seed1 = _n1.b;
+				return _Utils_Tuple2(
+					func(a),
+					seed1);
+			});
+	});
+var elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return elm$core$Maybe$Just(x);
+	} else {
+		return elm$core$Maybe$Nothing;
+	}
+};
+var elm_community$random_extra$Random$List$get = F2(
+	function (index, list) {
+		return elm$core$List$head(
+			A2(elm$core$List$drop, index, list));
+	});
+var elm_community$random_extra$Random$List$choose = function (list) {
+	if (elm$core$List$isEmpty(list)) {
+		return elm$random$Random$constant(
+			_Utils_Tuple2(elm$core$Maybe$Nothing, list));
+	} else {
+		var lastIndex = elm$core$List$length(list) - 1;
+		var gen = A2(elm$random$Random$int, 0, lastIndex);
+		var front = function (i) {
+			return A2(elm$core$List$take, i, list);
+		};
+		var back = function (i) {
+			return A2(elm$core$List$drop, i + 1, list);
+		};
+		return A2(
+			elm$random$Random$map,
+			function (index) {
+				return _Utils_Tuple2(
+					A2(elm_community$random_extra$Random$List$get, index, list),
+					A2(
+						elm$core$List$append,
+						front(index),
+						back(index)));
+			},
+			gen);
+	}
+};
+var author$project$Main$zufallsID = function (model) {
+	return elm_community$random_extra$Random$List$choose(
+		elm$core$Set$toList(
+			elm$core$Set$fromList(
+				A2(elm$core$List$map, author$project$Main$getID, model.shapes))));
+};
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
+var elm$random$Random$Generate = function (a) {
+	return {$: 'Generate', a: a};
+};
+var elm$random$Random$initialSeed = function (x) {
+	var _n0 = elm$random$Random$next(
+		A2(elm$random$Random$Seed, 0, 1013904223));
+	var state1 = _n0.a;
+	var incr = _n0.b;
+	var state2 = (state1 + x) >>> 0;
+	return elm$random$Random$next(
+		A2(elm$random$Random$Seed, state2, incr));
+};
+var elm$time$Time$Name = function (a) {
+	return {$: 'Name', a: a};
+};
+var elm$time$Time$Offset = function (a) {
+	return {$: 'Offset', a: a};
+};
+var elm$time$Time$Zone = F2(
+	function (a, b) {
+		return {$: 'Zone', a: a, b: b};
+	});
+var elm$time$Time$customZone = elm$time$Time$Zone;
+var elm$time$Time$Posix = function (a) {
+	return {$: 'Posix', a: a};
+};
+var elm$time$Time$millisToPosix = elm$time$Time$Posix;
+var elm$time$Time$now = _Time_now(elm$time$Time$millisToPosix);
+var elm$time$Time$posixToMillis = function (_n0) {
+	var millis = _n0.a;
+	return millis;
+};
+var elm$random$Random$init = A2(
+	elm$core$Task$andThen,
+	function (time) {
+		return elm$core$Task$succeed(
+			elm$random$Random$initialSeed(
+				elm$time$Time$posixToMillis(time)));
+	},
+	elm$time$Time$now);
+var elm$random$Random$step = F2(
+	function (_n0, seed) {
+		var generator = _n0.a;
+		return generator(seed);
+	});
+var elm$random$Random$onEffects = F3(
+	function (router, commands, seed) {
+		if (!commands.b) {
+			return elm$core$Task$succeed(seed);
+		} else {
+			var generator = commands.a.a;
+			var rest = commands.b;
+			var _n1 = A2(elm$random$Random$step, generator, seed);
+			var value = _n1.a;
+			var newSeed = _n1.b;
+			return A2(
+				elm$core$Task$andThen,
+				function (_n2) {
+					return A3(elm$random$Random$onEffects, router, rest, newSeed);
+				},
+				A2(elm$core$Platform$sendToApp, router, value));
+		}
+	});
+var elm$random$Random$onSelfMsg = F3(
+	function (_n0, _n1, seed) {
+		return elm$core$Task$succeed(seed);
+	});
+var elm$random$Random$cmdMap = F2(
+	function (func, _n0) {
+		var generator = _n0.a;
+		return elm$random$Random$Generate(
+			A2(elm$random$Random$map, func, generator));
+	});
+_Platform_effectManagers['Random'] = _Platform_createManager(elm$random$Random$init, elm$random$Random$onEffects, elm$random$Random$onSelfMsg, elm$random$Random$cmdMap);
+var elm$random$Random$command = _Platform_leaf('Random');
+var elm$random$Random$generate = F2(
+	function (tagger, generator) {
+		return elm$random$Random$command(
+			elm$random$Random$Generate(
+				A2(elm$random$Random$map, tagger, generator)));
+	});
 var author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -5890,17 +6368,25 @@ var author$project$Main$update = F2(
 				var id = msg.a;
 				var info = msg.b;
 				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
-			case 'ButtonClicked':
+			case 'PokeGenerateClicked':
+				return _Utils_Tuple2(
+					model,
+					A2(
+						elm$random$Random$generate,
+						author$project$Main$PokeGenerated,
+						author$project$Main$zufallsID(model)));
+			case 'PokeGenerated':
+				var id = msg.a;
 				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 			default:
 				var res = msg.a;
 				if (res.$ === 'Ok') {
-					var jsonDatei = res.a;
+					var jsondatei = res.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								shapes: author$project$Main$readPolys(author$project$Main$jsondatei),
+								shapes: author$project$Main$readPolys(jsondatei),
 								zustand: author$project$Main$Success
 							}),
 						elm$core$Platform$Cmd$none);
@@ -5928,8 +6414,10 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 			return 3;
 	}
 };
-var elm$html$Html$a = _VirtualDom_node('a');
 var elm$html$Html$div = _VirtualDom_node('div');
+var elm$html$Html$i = _VirtualDom_node('i');
+var elm$html$Html$p = _VirtualDom_node('p');
+var elm$html$Html$section = _VirtualDom_node('section');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var elm$json$Json$Encode$string = _Json_wrap;
@@ -5941,31 +6429,51 @@ var elm$html$Html$Attributes$stringProperty = F2(
 			elm$json$Json$Encode$string(string));
 	});
 var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
-var author$project$Main$buttons = function (model) {
+var author$project$Main$ashCatchThem = function (str) {
 	return A2(
-		elm$html$Html$div,
+		elm$html$Html$section,
 		_List_fromArray(
 			[
-				elm$html$Html$Attributes$class('nes-container is-rounded')
+				elm$html$Html$Attributes$class('message-list inhaltsElemente')
 			]),
 		_List_fromArray(
 			[
 				A2(
-				elm$html$Html$a,
+				elm$html$Html$section,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$class('nes-btn')
+						elm$html$Html$Attributes$class('message -left')
 					]),
 				_List_fromArray(
 					[
-						elm$html$Html$text('generate question')
+						A2(
+						elm$html$Html$i,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('nes-ash ash')
+							]),
+						_List_Nil),
+						A2(
+						elm$html$Html$div,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('nes-balloon from-left balloon')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								elm$html$Html$p,
+								_List_Nil,
+								_List_fromArray(
+									[
+										elm$html$Html$text(str)
+									]))
+							]))
 					]))
 			]));
 };
-var author$project$Main$PolyClicked = F2(
-	function (a, b) {
-		return {$: 'PolyClicked', a: a, b: b};
-	});
+var author$project$Main$PokeGenerateClicked = {$: 'PokeGenerateClicked'};
+var elm$html$Html$a = _VirtualDom_node('a');
 var elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -5983,6 +6491,32 @@ var elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		elm$json$Json$Decode$succeed(msg));
 };
+var author$project$Main$buttons = function (model) {
+	return A2(
+		elm$html$Html$div,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('nes-container is-rounded inhaltsElemente')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				elm$html$Html$a,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('nes-btn'),
+						elm$html$Html$Events$onClick(author$project$Main$PokeGenerateClicked)
+					]),
+				_List_fromArray(
+					[
+						elm$html$Html$text('generate question')
+					]))
+			]));
+};
+var author$project$Main$PolyClicked = F2(
+	function (a, b) {
+		return {$: 'PolyClicked', a: a, b: b};
+	});
 var elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
 var elm$svg$Svg$polygon = elm$svg$Svg$trustedNode('polygon');
 var elm$svg$Svg$Attributes$class = _VirtualDom_attribute('class');
@@ -5999,22 +6533,7 @@ var author$project$Main$svgPoly = function (poly) {
 			]),
 		_List_Nil);
 };
-var elm$core$List$map = F2(
-	function (f, xs) {
-		return A3(
-			elm$core$List$foldr,
-			F2(
-				function (x, acc) {
-					return A2(
-						elm$core$List$cons,
-						f(x),
-						acc);
-				}),
-			_List_Nil,
-			xs);
-	});
 var elm$html$Html$figure = _VirtualDom_node('figure');
-var elm$html$Html$section = _VirtualDom_node('section');
 var elm$html$Html$Attributes$height = function (n) {
 	return A2(
 		_VirtualDom_attribute,
@@ -6047,7 +6566,7 @@ var author$project$Main$clickableImage = function (model) {
 		elm$html$Html$section,
 		_List_fromArray(
 			[
-				elm$html$Html$Attributes$class('section')
+				elm$html$Html$Attributes$class('section inhaltsElemente')
 			]),
 		_List_fromArray(
 			[
@@ -6118,6 +6637,7 @@ var author$project$Main$view = function (model) {
 		_List_fromArray(
 			[
 				author$project$Main$buttons(model),
+				author$project$Main$ashCatchThem('Hallo! Ich bin Ash :)'),
 				author$project$Main$clickableImage(model)
 			]));
 };

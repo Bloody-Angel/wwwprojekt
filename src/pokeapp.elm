@@ -80,15 +80,27 @@ view : Model -> Html Msg
 view model =
     div [class "inhalt"]
         [buttons model
+        ,ashCatchThem "Hallo! Ich bin Ash :)"
         ,clickableImage model
         ]
 
 buttons : Model -> Html Msg
 buttons model =
-    div [class "nes-container is-rounded"
+    div [class "nes-container is-rounded inhaltsElemente"
         ]
         [a  [class "nes-btn", onClick PokeGenerateClicked] 
             [text "generate question"
+            ]
+        ]
+
+ashCatchThem : String -> Html Msg
+ashCatchThem str =
+    section [class "message-list inhaltsElemente"]  
+        [section [class "message -left"]
+            [Html.i [class "nes-ash ash"] []
+            ,div    [class "nes-balloon from-left balloon"] 
+                    [Html.p [] [text str]
+                    ]
             ]
         ]
 
@@ -123,8 +135,8 @@ svgPoly poly=
 --erstellt das Bild und die Polygone   
 clickableImage : Model -> Html Msg
 clickableImage model = 
-    section[ class "section" ]
-        [div [ class "container"]
+    section [class "section inhaltsElemente"]
+        [div [class "container"]
             [Html.figure [ class "image" ]
                 [svg [Svg.Attributes.class "viewBoxCenter", Svg.Attributes.width "100%", viewBox "0 0 1920 1080", version "1.1"]
                     ([Svg.defs[]
@@ -161,4 +173,3 @@ getID poly =
 zufallsID : Model -> Random.Generator (Maybe String, List String)
 zufallsID model =
     (choose (Set.toList (Set.fromList (List.map getID model.shapes))))
-
