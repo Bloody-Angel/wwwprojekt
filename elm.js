@@ -232,6 +232,87 @@ var _JsArray_appendN = F3(function(n, dest, source)
 
 
 
+var _List_Nil_UNUSED = { $: 0 };
+var _List_Nil = { $: '[]' };
+
+function _List_Cons_UNUSED(hd, tl) { return { $: 1, a: hd, b: tl }; }
+function _List_Cons(hd, tl) { return { $: '::', a: hd, b: tl }; }
+
+
+var _List_cons = F2(_List_Cons);
+
+function _List_fromArray(arr)
+{
+	var out = _List_Nil;
+	for (var i = arr.length; i--; )
+	{
+		out = _List_Cons(arr[i], out);
+	}
+	return out;
+}
+
+function _List_toArray(xs)
+{
+	for (var out = []; xs.b; xs = xs.b) // WHILE_CONS
+	{
+		out.push(xs.a);
+	}
+	return out;
+}
+
+var _List_map2 = F3(function(f, xs, ys)
+{
+	for (var arr = []; xs.b && ys.b; xs = xs.b, ys = ys.b) // WHILE_CONSES
+	{
+		arr.push(A2(f, xs.a, ys.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map3 = F4(function(f, xs, ys, zs)
+{
+	for (var arr = []; xs.b && ys.b && zs.b; xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A3(f, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map4 = F5(function(f, ws, xs, ys, zs)
+{
+	for (var arr = []; ws.b && xs.b && ys.b && zs.b; ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A4(f, ws.a, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map5 = F6(function(f, vs, ws, xs, ys, zs)
+{
+	for (var arr = []; vs.b && ws.b && xs.b && ys.b && zs.b; vs = vs.b, ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A5(f, vs.a, ws.a, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_sortBy = F2(function(f, xs)
+{
+	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
+		return _Utils_cmp(f(a), f(b));
+	}));
+});
+
+var _List_sortWith = F2(function(f, xs)
+{
+	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
+		var ord = A2(f, a, b);
+		return ord === elm$core$Basics$EQ ? 0 : ord === elm$core$Basics$LT ? -1 : 1;
+	}));
+});
+
+
+
 // LOG
 
 var _Debug_log_UNUSED = F2(function(tag, value)
@@ -709,87 +790,6 @@ function _Utils_ap(xs, ys)
 	}
 	return root;
 }
-
-
-
-var _List_Nil_UNUSED = { $: 0 };
-var _List_Nil = { $: '[]' };
-
-function _List_Cons_UNUSED(hd, tl) { return { $: 1, a: hd, b: tl }; }
-function _List_Cons(hd, tl) { return { $: '::', a: hd, b: tl }; }
-
-
-var _List_cons = F2(_List_Cons);
-
-function _List_fromArray(arr)
-{
-	var out = _List_Nil;
-	for (var i = arr.length; i--; )
-	{
-		out = _List_Cons(arr[i], out);
-	}
-	return out;
-}
-
-function _List_toArray(xs)
-{
-	for (var out = []; xs.b; xs = xs.b) // WHILE_CONS
-	{
-		out.push(xs.a);
-	}
-	return out;
-}
-
-var _List_map2 = F3(function(f, xs, ys)
-{
-	for (var arr = []; xs.b && ys.b; xs = xs.b, ys = ys.b) // WHILE_CONSES
-	{
-		arr.push(A2(f, xs.a, ys.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map3 = F4(function(f, xs, ys, zs)
-{
-	for (var arr = []; xs.b && ys.b && zs.b; xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A3(f, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map4 = F5(function(f, ws, xs, ys, zs)
-{
-	for (var arr = []; ws.b && xs.b && ys.b && zs.b; ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A4(f, ws.a, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map5 = F6(function(f, vs, ws, xs, ys, zs)
-{
-	for (var arr = []; vs.b && ws.b && xs.b && ys.b && zs.b; vs = vs.b, ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A5(f, vs.a, ws.a, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_sortBy = F2(function(f, xs)
-{
-	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
-		return _Utils_cmp(f(a), f(b));
-	}));
-});
-
-var _List_sortWith = F2(function(f, xs)
-{
-	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
-		var ord = A2(f, a, b);
-		return ord === elm$core$Basics$EQ ? 0 : ord === elm$core$Basics$LT ? -1 : 1;
-	}));
-});
 
 
 
@@ -2312,6 +2312,181 @@ function _Platform_mergeExportsDebug(moduleName, obj, exports)
 	}
 }
 
+
+
+// SEND REQUEST
+
+var _Http_toTask = F3(function(router, toTask, request)
+{
+	return _Scheduler_binding(function(callback)
+	{
+		function done(response) {
+			callback(toTask(request.expect.a(response)));
+		}
+
+		var xhr = new XMLHttpRequest();
+		xhr.addEventListener('error', function() { done(elm$http$Http$NetworkError_); });
+		xhr.addEventListener('timeout', function() { done(elm$http$Http$Timeout_); });
+		xhr.addEventListener('load', function() { done(_Http_toResponse(request.expect.b, xhr)); });
+		elm$core$Maybe$isJust(request.tracker) && _Http_track(router, xhr, request.tracker.a);
+
+		try {
+			xhr.open(request.method, request.url, true);
+		} catch (e) {
+			return done(elm$http$Http$BadUrl_(request.url));
+		}
+
+		_Http_configureRequest(xhr, request);
+
+		request.body.a && xhr.setRequestHeader('Content-Type', request.body.a);
+		xhr.send(request.body.b);
+
+		return function() { xhr.c = true; xhr.abort(); };
+	});
+});
+
+
+// CONFIGURE
+
+function _Http_configureRequest(xhr, request)
+{
+	for (var headers = request.headers; headers.b; headers = headers.b) // WHILE_CONS
+	{
+		xhr.setRequestHeader(headers.a.a, headers.a.b);
+	}
+	xhr.timeout = request.timeout.a || 0;
+	xhr.responseType = request.expect.d;
+	xhr.withCredentials = request.allowCookiesFromOtherDomains;
+}
+
+
+// RESPONSES
+
+function _Http_toResponse(toBody, xhr)
+{
+	return A2(
+		200 <= xhr.status && xhr.status < 300 ? elm$http$Http$GoodStatus_ : elm$http$Http$BadStatus_,
+		_Http_toMetadata(xhr),
+		toBody(xhr.response)
+	);
+}
+
+
+// METADATA
+
+function _Http_toMetadata(xhr)
+{
+	return {
+		url: xhr.responseURL,
+		statusCode: xhr.status,
+		statusText: xhr.statusText,
+		headers: _Http_parseHeaders(xhr.getAllResponseHeaders())
+	};
+}
+
+
+// HEADERS
+
+function _Http_parseHeaders(rawHeaders)
+{
+	if (!rawHeaders)
+	{
+		return elm$core$Dict$empty;
+	}
+
+	var headers = elm$core$Dict$empty;
+	var headerPairs = rawHeaders.split('\r\n');
+	for (var i = headerPairs.length; i--; )
+	{
+		var headerPair = headerPairs[i];
+		var index = headerPair.indexOf(': ');
+		if (index > 0)
+		{
+			var key = headerPair.substring(0, index);
+			var value = headerPair.substring(index + 2);
+
+			headers = A3(elm$core$Dict$update, key, function(oldValue) {
+				return elm$core$Maybe$Just(elm$core$Maybe$isJust(oldValue)
+					? value + ', ' + oldValue.a
+					: value
+				);
+			}, headers);
+		}
+	}
+	return headers;
+}
+
+
+// EXPECT
+
+var _Http_expect = F3(function(type, toBody, toValue)
+{
+	return {
+		$: 0,
+		d: type,
+		b: toBody,
+		a: toValue
+	};
+});
+
+var _Http_mapExpect = F2(function(func, expect)
+{
+	return {
+		$: 0,
+		d: expect.d,
+		b: expect.b,
+		a: function(x) { return func(expect.a(x)); }
+	};
+});
+
+function _Http_toDataView(arrayBuffer)
+{
+	return new DataView(arrayBuffer);
+}
+
+
+// BODY and PARTS
+
+var _Http_emptyBody = { $: 0 };
+var _Http_pair = F2(function(a, b) { return { $: 0, a: a, b: b }; });
+
+function _Http_toFormData(parts)
+{
+	for (var formData = new FormData(); parts.b; parts = parts.b) // WHILE_CONS
+	{
+		var part = parts.a;
+		formData.append(part.a, part.b);
+	}
+	return formData;
+}
+
+var _Http_bytesToBlob = F2(function(mime, bytes)
+{
+	return new Blob([bytes], { type: mime });
+});
+
+
+// PROGRESS
+
+function _Http_track(router, xhr, tracker)
+{
+	// TODO check out lengthComputable on loadstart event
+
+	xhr.upload.addEventListener('progress', function(event) {
+		if (xhr.c) { return; }
+		_Scheduler_rawSpawn(A2(elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, elm$http$Http$Sending({
+			sent: event.loaded,
+			size: event.total
+		}))));
+	});
+	xhr.addEventListener('progress', function(event) {
+		if (xhr.c) { return; }
+		_Scheduler_rawSpawn(A2(elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, elm$http$Http$Receiving({
+			received: event.loaded,
+			size: event.lengthComputable ? elm$core$Maybe$Just(event.total) : elm$core$Maybe$Nothing
+		}))));
+	});
+}
 
 
 
@@ -4310,8 +4485,23 @@ function _Browser_load(url)
 		}
 	}));
 }
-var elm$core$Basics$EQ = {$: 'EQ'};
-var elm$core$Basics$LT = {$: 'LT'};
+var author$project$Main$GotText = function (a) {
+	return {$: 'GotText', a: a};
+};
+var author$project$Main$Success = {$: 'Success'};
+var elm$core$Result$Ok = function (a) {
+	return {$: 'Ok', a: a};
+};
+var elm$core$Basics$composeR = F3(
+	function (f, g, x) {
+		return g(
+			f(x));
+	});
+var elm$core$Basics$identity = function (x) {
+	return x;
+};
+var elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
+var elm$core$Dict$empty = elm$core$Dict$RBEmpty_elm_builtin;
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
 var elm$core$Array$foldr = F3(
 	function (func, baseCase, _n0) {
@@ -4333,6 +4523,8 @@ var elm$core$Array$foldr = F3(
 			A3(elm$core$Elm$JsArray$foldr, func, baseCase, tail),
 			tree);
 	});
+var elm$core$Basics$EQ = {$: 'EQ'};
+var elm$core$Basics$LT = {$: 'LT'};
 var elm$core$List$cons = _List_cons;
 var elm$core$Array$toList = function (array) {
 	return A3(elm$core$Array$foldr, elm$core$List$cons, _List_Nil, array);
@@ -4390,22 +4582,541 @@ var elm$core$Set$toList = function (_n0) {
 	var dict = _n0.a;
 	return elm$core$Dict$keys(dict);
 };
-var author$project$Main$initialModel = {shapes: _List_Nil};
-var author$project$Main$update = F2(
-	function (msg, model) {
-		if (msg.$ === 'PolyClicked') {
-			var id = msg.a;
-			var info = msg.b;
-			return model;
-		} else {
-			return model;
+var elm$core$Basics$compare = _Utils_compare;
+var elm$core$Maybe$Just = function (a) {
+	return {$: 'Just', a: a};
+};
+var elm$core$Maybe$Nothing = {$: 'Nothing'};
+var elm$core$Dict$get = F2(
+	function (targetKey, dict) {
+		get:
+		while (true) {
+			if (dict.$ === 'RBEmpty_elm_builtin') {
+				return elm$core$Maybe$Nothing;
+			} else {
+				var key = dict.b;
+				var value = dict.c;
+				var left = dict.d;
+				var right = dict.e;
+				var _n1 = A2(elm$core$Basics$compare, targetKey, key);
+				switch (_n1.$) {
+					case 'LT':
+						var $temp$targetKey = targetKey,
+							$temp$dict = left;
+						targetKey = $temp$targetKey;
+						dict = $temp$dict;
+						continue get;
+					case 'EQ':
+						return elm$core$Maybe$Just(value);
+					default:
+						var $temp$targetKey = targetKey,
+							$temp$dict = right;
+						targetKey = $temp$targetKey;
+						dict = $temp$dict;
+						continue get;
+				}
+			}
 		}
 	});
-var author$project$Main$jsondatei = '\r\n    [\r\n	{\r\n		"Pokedex No":"258",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"368 335,375 342,380 349,384 344,377 335,389 331,386 314,395 311,406 315,403 330,410 335,412 348,405 352,406 362,378 364,370 362,361 352,364 339"\r\n	}\r\n	,{\r\n		"Pokedex No":"728",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"507 351,514 351,523 349,538 350,540 336,530 336,528 332,542 324,540 316,533 319,525 316,525 309,532 304,534 296,543 288,554 286,568 289,577 296,585 293,592 300,591 306,586 308,589 316,590 322,585 324,581 323,578 331,587 341,580 339,591 349,610 353,609 360,588 358,576 351,572 351,570 357,561 358,557 363,539 361,510 358"\r\n	}\r\n	,{\r\n		"Pokedex No":"489",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"414 507,427 501,451 491,476 485,489 482,505 481,511 486,515 489,508 492,501 500,495 507,494 513,494 525,503 532,513 536,507 540,499 541,493 541,490 542,490 549,494 554,506 556,513 551,518 558,527 563,539 552,546 554,557 549,562 545,563 539,558 536,553 537,541 540,538 538,546 536,556 527,556 517,551 505,544 494,532 489,536 489,543 485,546 479,539 472,531 470,512 469,507 476,495 475,451 485,429 493,413 504,376 532"\r\n	}\r\n	,{\r\n		"Pokedex No":"393",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"670 275,671 281,683 283,687 280,695 278,692 273,697 263,693 251,700 253,703 244,702 231,694 221,685 216,673 216,664 224,660 236,662 240,664 252,660 256,657 265,660 269,668 270"\r\n	}\r\n	,{\r\n		"Pokedex No":"349",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"1252 943,1293 938,1330 963,1328 978,1338 979,1344 994,1378 994,1369 971,1412 967,1426 962,1425 950,1421 931,1408 887,1365 858,1373 827,1312 821,1325 870,1297 883,1282 855,1249 867,1241 911"\r\n	}\r\n	,{\r\n		"Pokedex No":"129",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"734 413,746 427,761 411,766 413,765 427,800 439,808 417,821 417,829 437,842 433,846 421,837 418,833 402,833 383,821 365,798 355,798 335,786 338,769 327,773 349,760 349,764 369,754 373,749 357,737 354,738 389"\r\n	}\r\n	,{\r\n		"Pokedex No":"129",\r\n		"Zusatzinfo":"s",\r\n		"Polygon points":"1480 514,1489 501,1522 513,1525 502,1541 501,1546 516,1554 516,1553 488,1558 481,1545 460,1529 456,1513 437,1494 468,1470 454,1473 481,1470 509"\r\n	}\r\n	,{\r\n		"Pokedex No":"79",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"930 393,934 401,940 397,953 400,962 401,969 397,974 401,985 401,989 393,1002 389,1002 373,994 361,978 357,966 360,958 356,945 360,946 349,960 341,958 336,936 333,925 364,928 377"\r\n	}\r\n]\r\n\r\n    ';
-var author$project$Main$Polygon = F3(
-	function (dexId, shiny, polypoints) {
-		return {dexId: dexId, polypoints: polypoints, shiny: shiny};
+var elm$core$Dict$Black = {$: 'Black'};
+var elm$core$Dict$RBNode_elm_builtin = F5(
+	function (a, b, c, d, e) {
+		return {$: 'RBNode_elm_builtin', a: a, b: b, c: c, d: d, e: e};
 	});
+var elm$core$Dict$Red = {$: 'Red'};
+var elm$core$Dict$balance = F5(
+	function (color, key, value, left, right) {
+		if ((right.$ === 'RBNode_elm_builtin') && (right.a.$ === 'Red')) {
+			var _n1 = right.a;
+			var rK = right.b;
+			var rV = right.c;
+			var rLeft = right.d;
+			var rRight = right.e;
+			if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) {
+				var _n3 = left.a;
+				var lK = left.b;
+				var lV = left.c;
+				var lLeft = left.d;
+				var lRight = left.e;
+				return A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					elm$core$Dict$Red,
+					key,
+					value,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, lK, lV, lLeft, lRight),
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, rK, rV, rLeft, rRight));
+			} else {
+				return A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					color,
+					rK,
+					rV,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, key, value, left, rLeft),
+					rRight);
+			}
+		} else {
+			if ((((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) && (left.d.$ === 'RBNode_elm_builtin')) && (left.d.a.$ === 'Red')) {
+				var _n5 = left.a;
+				var lK = left.b;
+				var lV = left.c;
+				var _n6 = left.d;
+				var _n7 = _n6.a;
+				var llK = _n6.b;
+				var llV = _n6.c;
+				var llLeft = _n6.d;
+				var llRight = _n6.e;
+				var lRight = left.e;
+				return A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					elm$core$Dict$Red,
+					lK,
+					lV,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, llK, llV, llLeft, llRight),
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, key, value, lRight, right));
+			} else {
+				return A5(elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
+			}
+		}
+	});
+var elm$core$Dict$insertHelp = F3(
+	function (key, value, dict) {
+		if (dict.$ === 'RBEmpty_elm_builtin') {
+			return A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, key, value, elm$core$Dict$RBEmpty_elm_builtin, elm$core$Dict$RBEmpty_elm_builtin);
+		} else {
+			var nColor = dict.a;
+			var nKey = dict.b;
+			var nValue = dict.c;
+			var nLeft = dict.d;
+			var nRight = dict.e;
+			var _n1 = A2(elm$core$Basics$compare, key, nKey);
+			switch (_n1.$) {
+				case 'LT':
+					return A5(
+						elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						A3(elm$core$Dict$insertHelp, key, value, nLeft),
+						nRight);
+				case 'EQ':
+					return A5(elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
+				default:
+					return A5(
+						elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						nLeft,
+						A3(elm$core$Dict$insertHelp, key, value, nRight));
+			}
+		}
+	});
+var elm$core$Dict$insert = F3(
+	function (key, value, dict) {
+		var _n0 = A3(elm$core$Dict$insertHelp, key, value, dict);
+		if ((_n0.$ === 'RBNode_elm_builtin') && (_n0.a.$ === 'Red')) {
+			var _n1 = _n0.a;
+			var k = _n0.b;
+			var v = _n0.c;
+			var l = _n0.d;
+			var r = _n0.e;
+			return A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, k, v, l, r);
+		} else {
+			var x = _n0;
+			return x;
+		}
+	});
+var elm$core$Basics$eq = _Utils_equal;
+var elm$core$Basics$lt = _Utils_lt;
+var elm$core$Dict$getMin = function (dict) {
+	getMin:
+	while (true) {
+		if ((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) {
+			var left = dict.d;
+			var $temp$dict = left;
+			dict = $temp$dict;
+			continue getMin;
+		} else {
+			return dict;
+		}
+	}
+};
+var elm$core$Dict$moveRedLeft = function (dict) {
+	if (((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) && (dict.e.$ === 'RBNode_elm_builtin')) {
+		if ((dict.e.d.$ === 'RBNode_elm_builtin') && (dict.e.d.a.$ === 'Red')) {
+			var clr = dict.a;
+			var k = dict.b;
+			var v = dict.c;
+			var _n1 = dict.d;
+			var lClr = _n1.a;
+			var lK = _n1.b;
+			var lV = _n1.c;
+			var lLeft = _n1.d;
+			var lRight = _n1.e;
+			var _n2 = dict.e;
+			var rClr = _n2.a;
+			var rK = _n2.b;
+			var rV = _n2.c;
+			var rLeft = _n2.d;
+			var _n3 = rLeft.a;
+			var rlK = rLeft.b;
+			var rlV = rLeft.c;
+			var rlL = rLeft.d;
+			var rlR = rLeft.e;
+			var rRight = _n2.e;
+			return A5(
+				elm$core$Dict$RBNode_elm_builtin,
+				elm$core$Dict$Red,
+				rlK,
+				rlV,
+				A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					elm$core$Dict$Black,
+					k,
+					v,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, lK, lV, lLeft, lRight),
+					rlL),
+				A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, rK, rV, rlR, rRight));
+		} else {
+			var clr = dict.a;
+			var k = dict.b;
+			var v = dict.c;
+			var _n4 = dict.d;
+			var lClr = _n4.a;
+			var lK = _n4.b;
+			var lV = _n4.c;
+			var lLeft = _n4.d;
+			var lRight = _n4.e;
+			var _n5 = dict.e;
+			var rClr = _n5.a;
+			var rK = _n5.b;
+			var rV = _n5.c;
+			var rLeft = _n5.d;
+			var rRight = _n5.e;
+			if (clr.$ === 'Black') {
+				return A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					elm$core$Dict$Black,
+					k,
+					v,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, lK, lV, lLeft, lRight),
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, rK, rV, rLeft, rRight));
+			} else {
+				return A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					elm$core$Dict$Black,
+					k,
+					v,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, lK, lV, lLeft, lRight),
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, rK, rV, rLeft, rRight));
+			}
+		}
+	} else {
+		return dict;
+	}
+};
+var elm$core$Dict$moveRedRight = function (dict) {
+	if (((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) && (dict.e.$ === 'RBNode_elm_builtin')) {
+		if ((dict.d.d.$ === 'RBNode_elm_builtin') && (dict.d.d.a.$ === 'Red')) {
+			var clr = dict.a;
+			var k = dict.b;
+			var v = dict.c;
+			var _n1 = dict.d;
+			var lClr = _n1.a;
+			var lK = _n1.b;
+			var lV = _n1.c;
+			var _n2 = _n1.d;
+			var _n3 = _n2.a;
+			var llK = _n2.b;
+			var llV = _n2.c;
+			var llLeft = _n2.d;
+			var llRight = _n2.e;
+			var lRight = _n1.e;
+			var _n4 = dict.e;
+			var rClr = _n4.a;
+			var rK = _n4.b;
+			var rV = _n4.c;
+			var rLeft = _n4.d;
+			var rRight = _n4.e;
+			return A5(
+				elm$core$Dict$RBNode_elm_builtin,
+				elm$core$Dict$Red,
+				lK,
+				lV,
+				A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, llK, llV, llLeft, llRight),
+				A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					elm$core$Dict$Black,
+					k,
+					v,
+					lRight,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, rK, rV, rLeft, rRight)));
+		} else {
+			var clr = dict.a;
+			var k = dict.b;
+			var v = dict.c;
+			var _n5 = dict.d;
+			var lClr = _n5.a;
+			var lK = _n5.b;
+			var lV = _n5.c;
+			var lLeft = _n5.d;
+			var lRight = _n5.e;
+			var _n6 = dict.e;
+			var rClr = _n6.a;
+			var rK = _n6.b;
+			var rV = _n6.c;
+			var rLeft = _n6.d;
+			var rRight = _n6.e;
+			if (clr.$ === 'Black') {
+				return A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					elm$core$Dict$Black,
+					k,
+					v,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, lK, lV, lLeft, lRight),
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, rK, rV, rLeft, rRight));
+			} else {
+				return A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					elm$core$Dict$Black,
+					k,
+					v,
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, lK, lV, lLeft, lRight),
+					A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, rK, rV, rLeft, rRight));
+			}
+		}
+	} else {
+		return dict;
+	}
+};
+var elm$core$Dict$removeHelpPrepEQGT = F7(
+	function (targetKey, dict, color, key, value, left, right) {
+		if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) {
+			var _n1 = left.a;
+			var lK = left.b;
+			var lV = left.c;
+			var lLeft = left.d;
+			var lRight = left.e;
+			return A5(
+				elm$core$Dict$RBNode_elm_builtin,
+				color,
+				lK,
+				lV,
+				lLeft,
+				A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Red, key, value, lRight, right));
+		} else {
+			_n2$2:
+			while (true) {
+				if ((right.$ === 'RBNode_elm_builtin') && (right.a.$ === 'Black')) {
+					if (right.d.$ === 'RBNode_elm_builtin') {
+						if (right.d.a.$ === 'Black') {
+							var _n3 = right.a;
+							var _n4 = right.d;
+							var _n5 = _n4.a;
+							return elm$core$Dict$moveRedRight(dict);
+						} else {
+							break _n2$2;
+						}
+					} else {
+						var _n6 = right.a;
+						var _n7 = right.d;
+						return elm$core$Dict$moveRedRight(dict);
+					}
+				} else {
+					break _n2$2;
+				}
+			}
+			return dict;
+		}
+	});
+var elm$core$Dict$removeMin = function (dict) {
+	if ((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) {
+		var color = dict.a;
+		var key = dict.b;
+		var value = dict.c;
+		var left = dict.d;
+		var lColor = left.a;
+		var lLeft = left.d;
+		var right = dict.e;
+		if (lColor.$ === 'Black') {
+			if ((lLeft.$ === 'RBNode_elm_builtin') && (lLeft.a.$ === 'Red')) {
+				var _n3 = lLeft.a;
+				return A5(
+					elm$core$Dict$RBNode_elm_builtin,
+					color,
+					key,
+					value,
+					elm$core$Dict$removeMin(left),
+					right);
+			} else {
+				var _n4 = elm$core$Dict$moveRedLeft(dict);
+				if (_n4.$ === 'RBNode_elm_builtin') {
+					var nColor = _n4.a;
+					var nKey = _n4.b;
+					var nValue = _n4.c;
+					var nLeft = _n4.d;
+					var nRight = _n4.e;
+					return A5(
+						elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						elm$core$Dict$removeMin(nLeft),
+						nRight);
+				} else {
+					return elm$core$Dict$RBEmpty_elm_builtin;
+				}
+			}
+		} else {
+			return A5(
+				elm$core$Dict$RBNode_elm_builtin,
+				color,
+				key,
+				value,
+				elm$core$Dict$removeMin(left),
+				right);
+		}
+	} else {
+		return elm$core$Dict$RBEmpty_elm_builtin;
+	}
+};
+var elm$core$Dict$removeHelp = F2(
+	function (targetKey, dict) {
+		if (dict.$ === 'RBEmpty_elm_builtin') {
+			return elm$core$Dict$RBEmpty_elm_builtin;
+		} else {
+			var color = dict.a;
+			var key = dict.b;
+			var value = dict.c;
+			var left = dict.d;
+			var right = dict.e;
+			if (_Utils_cmp(targetKey, key) < 0) {
+				if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Black')) {
+					var _n4 = left.a;
+					var lLeft = left.d;
+					if ((lLeft.$ === 'RBNode_elm_builtin') && (lLeft.a.$ === 'Red')) {
+						var _n6 = lLeft.a;
+						return A5(
+							elm$core$Dict$RBNode_elm_builtin,
+							color,
+							key,
+							value,
+							A2(elm$core$Dict$removeHelp, targetKey, left),
+							right);
+					} else {
+						var _n7 = elm$core$Dict$moveRedLeft(dict);
+						if (_n7.$ === 'RBNode_elm_builtin') {
+							var nColor = _n7.a;
+							var nKey = _n7.b;
+							var nValue = _n7.c;
+							var nLeft = _n7.d;
+							var nRight = _n7.e;
+							return A5(
+								elm$core$Dict$balance,
+								nColor,
+								nKey,
+								nValue,
+								A2(elm$core$Dict$removeHelp, targetKey, nLeft),
+								nRight);
+						} else {
+							return elm$core$Dict$RBEmpty_elm_builtin;
+						}
+					}
+				} else {
+					return A5(
+						elm$core$Dict$RBNode_elm_builtin,
+						color,
+						key,
+						value,
+						A2(elm$core$Dict$removeHelp, targetKey, left),
+						right);
+				}
+			} else {
+				return A2(
+					elm$core$Dict$removeHelpEQGT,
+					targetKey,
+					A7(elm$core$Dict$removeHelpPrepEQGT, targetKey, dict, color, key, value, left, right));
+			}
+		}
+	});
+var elm$core$Dict$removeHelpEQGT = F2(
+	function (targetKey, dict) {
+		if (dict.$ === 'RBNode_elm_builtin') {
+			var color = dict.a;
+			var key = dict.b;
+			var value = dict.c;
+			var left = dict.d;
+			var right = dict.e;
+			if (_Utils_eq(targetKey, key)) {
+				var _n1 = elm$core$Dict$getMin(right);
+				if (_n1.$ === 'RBNode_elm_builtin') {
+					var minKey = _n1.b;
+					var minValue = _n1.c;
+					return A5(
+						elm$core$Dict$balance,
+						color,
+						minKey,
+						minValue,
+						left,
+						elm$core$Dict$removeMin(right));
+				} else {
+					return elm$core$Dict$RBEmpty_elm_builtin;
+				}
+			} else {
+				return A5(
+					elm$core$Dict$balance,
+					color,
+					key,
+					value,
+					left,
+					A2(elm$core$Dict$removeHelp, targetKey, right));
+			}
+		} else {
+			return elm$core$Dict$RBEmpty_elm_builtin;
+		}
+	});
+var elm$core$Dict$remove = F2(
+	function (key, dict) {
+		var _n0 = A2(elm$core$Dict$removeHelp, key, dict);
+		if ((_n0.$ === 'RBNode_elm_builtin') && (_n0.a.$ === 'Red')) {
+			var _n1 = _n0.a;
+			var k = _n0.b;
+			var v = _n0.c;
+			var l = _n0.d;
+			var r = _n0.e;
+			return A5(elm$core$Dict$RBNode_elm_builtin, elm$core$Dict$Black, k, v, l, r);
+		} else {
+			var x = _n0;
+			return x;
+		}
+	});
+var elm$core$Dict$update = F3(
+	function (targetKey, alter, dictionary) {
+		var _n0 = alter(
+			A2(elm$core$Dict$get, targetKey, dictionary));
+		if (_n0.$ === 'Just') {
+			var value = _n0.a;
+			return A3(elm$core$Dict$insert, targetKey, value, dictionary);
+		} else {
+			return A2(elm$core$Dict$remove, targetKey, dictionary);
+		}
+	});
+var elm$core$Basics$False = {$: 'False'};
+var elm$core$Basics$True = {$: 'True'};
+var elm$core$Maybe$isJust = function (maybe) {
+	if (maybe.$ === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var elm$core$Result$isOk = function (result) {
+	if (result.$ === 'Ok') {
+		return true;
+	} else {
+		return false;
+	}
+};
 var elm$core$Array$branchFactor = 32;
 var elm$core$Array$Array_elm_builtin = F4(
 	function (a, b, c, d) {
@@ -4477,7 +5188,6 @@ var elm$core$Basics$apR = F2(
 	function (x, f) {
 		return f(x);
 	});
-var elm$core$Basics$eq = _Utils_equal;
 var elm$core$Tuple$first = function (_n0) {
 	var x = _n0.a;
 	return x;
@@ -4535,9 +5245,7 @@ var elm$core$Array$builderToArray = F2(
 				builder.tail);
 		}
 	});
-var elm$core$Basics$False = {$: 'False'};
 var elm$core$Basics$idiv = _Basics_idiv;
-var elm$core$Basics$lt = _Utils_lt;
 var elm$core$Elm$JsArray$initialize = _JsArray_initialize;
 var elm$core$Array$initializeHelp = F5(
 	function (fn, fromIndex, len, nodeList, tail) {
@@ -4578,23 +5286,8 @@ var elm$core$Array$initialize = F2(
 			return A5(elm$core$Array$initializeHelp, fn, initialFromIndex, len, _List_Nil, tail);
 		}
 	});
-var elm$core$Maybe$Just = function (a) {
-	return {$: 'Just', a: a};
-};
-var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
-};
-var elm$core$Result$Ok = function (a) {
-	return {$: 'Ok', a: a};
-};
-var elm$core$Basics$True = {$: 'True'};
-var elm$core$Result$isOk = function (result) {
-	if (result.$ === 'Ok') {
-		return true;
-	} else {
-		return false;
-	}
 };
 var elm$json$Json$Decode$Failure = F2(
 	function (a, b) {
@@ -4801,85 +5494,181 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 			}
 		}
 	});
-var elm$json$Json$Decode$field = _Json_decodeField;
-var elm$json$Json$Decode$map3 = _Json_map3;
-var elm$json$Json$Decode$string = _Json_decodeString;
-var author$project$Main$readSinglePoly = A4(
-	elm$json$Json$Decode$map3,
-	author$project$Main$Polygon,
-	A2(elm$json$Json$Decode$field, 'Pokedex No', elm$json$Json$Decode$string),
-	A2(elm$json$Json$Decode$field, 'Zusatzinfo', elm$json$Json$Decode$string),
-	A2(elm$json$Json$Decode$field, 'Polygon points', elm$json$Json$Decode$string));
-var elm$json$Json$Decode$decodeString = _Json_runOnString;
-var elm$json$Json$Decode$list = _Json_decodeList;
-var author$project$Main$readPolys = function (str) {
-	var result = A2(
-		elm$json$Json$Decode$decodeString,
-		elm$json$Json$Decode$list(author$project$Main$readSinglePoly),
-		str);
-	if (result.$ === 'Ok') {
-		var wert = result.a;
-		return wert;
-	} else {
-		var error = result.a;
-		return _List_Nil;
-	}
-};
-var author$project$Main$PolyClicked = F2(
+var elm$core$Platform$sendToApp = _Platform_sendToApp;
+var elm$core$Platform$sendToSelf = _Platform_sendToSelf;
+var elm$core$Result$map = F2(
+	function (func, ra) {
+		if (ra.$ === 'Ok') {
+			var a = ra.a;
+			return elm$core$Result$Ok(
+				func(a));
+		} else {
+			var e = ra.a;
+			return elm$core$Result$Err(e);
+		}
+	});
+var elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
-		return {$: 'PolyClicked', a: a, b: b};
+		return {$: 'BadStatus_', a: a, b: b};
 	});
-var elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
+var elm$http$Http$BadUrl_ = function (a) {
+	return {$: 'BadUrl_', a: a};
 };
-var elm$core$Basics$identity = function (x) {
-	return x;
+var elm$http$Http$GoodStatus_ = F2(
+	function (a, b) {
+		return {$: 'GoodStatus_', a: a, b: b};
+	});
+var elm$http$Http$NetworkError_ = {$: 'NetworkError_'};
+var elm$http$Http$Receiving = function (a) {
+	return {$: 'Receiving', a: a};
 };
-var elm$json$Json$Decode$map = _Json_map1;
-var elm$json$Json$Decode$map2 = _Json_map2;
-var elm$json$Json$Decode$succeed = _Json_succeed;
-var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
-	switch (handler.$) {
-		case 'Normal':
-			return 0;
-		case 'MayStopPropagation':
-			return 1;
-		case 'MayPreventDefault':
-			return 2;
-		default:
-			return 3;
-	}
+var elm$http$Http$Sending = function (a) {
+	return {$: 'Sending', a: a};
 };
-var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var elm$html$Html$Events$on = F2(
-	function (event, decoder) {
+var elm$http$Http$Timeout_ = {$: 'Timeout_'};
+var elm$http$Http$expectStringResponse = F2(
+	function (toMsg, toResult) {
+		return A3(
+			_Http_expect,
+			'',
+			elm$core$Basics$identity,
+			A2(elm$core$Basics$composeR, toResult, toMsg));
+	});
+var elm$core$Result$mapError = F2(
+	function (f, result) {
+		if (result.$ === 'Ok') {
+			var v = result.a;
+			return elm$core$Result$Ok(v);
+		} else {
+			var e = result.a;
+			return elm$core$Result$Err(
+				f(e));
+		}
+	});
+var elm$http$Http$BadBody = function (a) {
+	return {$: 'BadBody', a: a};
+};
+var elm$http$Http$BadStatus = function (a) {
+	return {$: 'BadStatus', a: a};
+};
+var elm$http$Http$BadUrl = function (a) {
+	return {$: 'BadUrl', a: a};
+};
+var elm$http$Http$NetworkError = {$: 'NetworkError'};
+var elm$http$Http$Timeout = {$: 'Timeout'};
+var elm$http$Http$resolve = F2(
+	function (toResult, response) {
+		switch (response.$) {
+			case 'BadUrl_':
+				var url = response.a;
+				return elm$core$Result$Err(
+					elm$http$Http$BadUrl(url));
+			case 'Timeout_':
+				return elm$core$Result$Err(elm$http$Http$Timeout);
+			case 'NetworkError_':
+				return elm$core$Result$Err(elm$http$Http$NetworkError);
+			case 'BadStatus_':
+				var metadata = response.a;
+				return elm$core$Result$Err(
+					elm$http$Http$BadStatus(metadata.statusCode));
+			default:
+				var body = response.b;
+				return A2(
+					elm$core$Result$mapError,
+					elm$http$Http$BadBody,
+					toResult(body));
+		}
+	});
+var elm$http$Http$expectString = function (toMsg) {
+	return A2(
+		elm$http$Http$expectStringResponse,
+		toMsg,
+		elm$http$Http$resolve(elm$core$Result$Ok));
+};
+var elm$http$Http$emptyBody = _Http_emptyBody;
+var elm$http$Http$Request = function (a) {
+	return {$: 'Request', a: a};
+};
+var elm$core$Task$succeed = _Scheduler_succeed;
+var elm$http$Http$State = F2(
+	function (reqs, subs) {
+		return {reqs: reqs, subs: subs};
+	});
+var elm$http$Http$init = elm$core$Task$succeed(
+	A2(elm$http$Http$State, elm$core$Dict$empty, _List_Nil));
+var elm$core$Task$andThen = _Scheduler_andThen;
+var elm$core$Process$kill = _Scheduler_kill;
+var elm$core$Process$spawn = _Scheduler_spawn;
+var elm$http$Http$updateReqs = F3(
+	function (router, cmds, reqs) {
+		updateReqs:
+		while (true) {
+			if (!cmds.b) {
+				return elm$core$Task$succeed(reqs);
+			} else {
+				var cmd = cmds.a;
+				var otherCmds = cmds.b;
+				if (cmd.$ === 'Cancel') {
+					var tracker = cmd.a;
+					var _n2 = A2(elm$core$Dict$get, tracker, reqs);
+					if (_n2.$ === 'Nothing') {
+						var $temp$router = router,
+							$temp$cmds = otherCmds,
+							$temp$reqs = reqs;
+						router = $temp$router;
+						cmds = $temp$cmds;
+						reqs = $temp$reqs;
+						continue updateReqs;
+					} else {
+						var pid = _n2.a;
+						return A2(
+							elm$core$Task$andThen,
+							function (_n3) {
+								return A3(
+									elm$http$Http$updateReqs,
+									router,
+									otherCmds,
+									A2(elm$core$Dict$remove, tracker, reqs));
+							},
+							elm$core$Process$kill(pid));
+					}
+				} else {
+					var req = cmd.a;
+					return A2(
+						elm$core$Task$andThen,
+						function (pid) {
+							var _n4 = req.tracker;
+							if (_n4.$ === 'Nothing') {
+								return A3(elm$http$Http$updateReqs, router, otherCmds, reqs);
+							} else {
+								var tracker = _n4.a;
+								return A3(
+									elm$http$Http$updateReqs,
+									router,
+									otherCmds,
+									A3(elm$core$Dict$insert, tracker, pid, reqs));
+							}
+						},
+						elm$core$Process$spawn(
+							A3(
+								_Http_toTask,
+								router,
+								elm$core$Platform$sendToApp(router),
+								req)));
+				}
+			}
+		}
+	});
+var elm$http$Http$onEffects = F4(
+	function (router, cmds, subs, state) {
 		return A2(
-			elm$virtual_dom$VirtualDom$on,
-			event,
-			elm$virtual_dom$VirtualDom$Normal(decoder));
+			elm$core$Task$andThen,
+			function (reqs) {
+				return elm$core$Task$succeed(
+					A2(elm$http$Http$State, reqs, subs));
+			},
+			A3(elm$http$Http$updateReqs, router, cmds, state.reqs));
 	});
-var elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		elm$html$Html$Events$on,
-		'click',
-		elm$json$Json$Decode$succeed(msg));
-};
-var elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
-var elm$svg$Svg$polygon = elm$svg$Svg$trustedNode('polygon');
-var elm$svg$Svg$Attributes$class = _VirtualDom_attribute('class');
-var elm$svg$Svg$Attributes$points = _VirtualDom_attribute('points');
-var author$project$Main$svgPoly = function (poly) {
-	return A2(
-		elm$svg$Svg$polygon,
-		_List_fromArray(
-			[
-				elm$svg$Svg$Attributes$points(poly.polypoints),
-				elm$svg$Svg$Attributes$class('polygon'),
-				elm$html$Html$Events$onClick(
-				A2(author$project$Main$PolyClicked, poly.dexId, poly.shiny))
-			]),
-		_List_Nil);
-};
 var elm$core$List$foldrHelper = F4(
 	function (fn, acc, ctr, ls) {
 		if (!ls.b) {
@@ -4935,6 +5724,281 @@ var elm$core$List$foldr = F3(
 	function (fn, acc, ls) {
 		return A4(elm$core$List$foldrHelper, fn, acc, 0, ls);
 	});
+var elm$core$List$maybeCons = F3(
+	function (f, mx, xs) {
+		var _n0 = f(mx);
+		if (_n0.$ === 'Just') {
+			var x = _n0.a;
+			return A2(elm$core$List$cons, x, xs);
+		} else {
+			return xs;
+		}
+	});
+var elm$core$List$filterMap = F2(
+	function (f, xs) {
+		return A3(
+			elm$core$List$foldr,
+			elm$core$List$maybeCons(f),
+			_List_Nil,
+			xs);
+	});
+var elm$core$Task$map2 = F3(
+	function (func, taskA, taskB) {
+		return A2(
+			elm$core$Task$andThen,
+			function (a) {
+				return A2(
+					elm$core$Task$andThen,
+					function (b) {
+						return elm$core$Task$succeed(
+							A2(func, a, b));
+					},
+					taskB);
+			},
+			taskA);
+	});
+var elm$core$Task$sequence = function (tasks) {
+	return A3(
+		elm$core$List$foldr,
+		elm$core$Task$map2(elm$core$List$cons),
+		elm$core$Task$succeed(_List_Nil),
+		tasks);
+};
+var elm$http$Http$maybeSend = F4(
+	function (router, desiredTracker, progress, _n0) {
+		var actualTracker = _n0.a;
+		var toMsg = _n0.b;
+		return _Utils_eq(desiredTracker, actualTracker) ? elm$core$Maybe$Just(
+			A2(
+				elm$core$Platform$sendToApp,
+				router,
+				toMsg(progress))) : elm$core$Maybe$Nothing;
+	});
+var elm$http$Http$onSelfMsg = F3(
+	function (router, _n0, state) {
+		var tracker = _n0.a;
+		var progress = _n0.b;
+		return A2(
+			elm$core$Task$andThen,
+			function (_n1) {
+				return elm$core$Task$succeed(state);
+			},
+			elm$core$Task$sequence(
+				A2(
+					elm$core$List$filterMap,
+					A3(elm$http$Http$maybeSend, router, tracker, progress),
+					state.subs)));
+	});
+var elm$http$Http$Cancel = function (a) {
+	return {$: 'Cancel', a: a};
+};
+var elm$http$Http$cmdMap = F2(
+	function (func, cmd) {
+		if (cmd.$ === 'Cancel') {
+			var tracker = cmd.a;
+			return elm$http$Http$Cancel(tracker);
+		} else {
+			var r = cmd.a;
+			return elm$http$Http$Request(
+				{
+					allowCookiesFromOtherDomains: r.allowCookiesFromOtherDomains,
+					body: r.body,
+					expect: A2(_Http_mapExpect, func, r.expect),
+					headers: r.headers,
+					method: r.method,
+					timeout: r.timeout,
+					tracker: r.tracker,
+					url: r.url
+				});
+		}
+	});
+var elm$http$Http$MySub = F2(
+	function (a, b) {
+		return {$: 'MySub', a: a, b: b};
+	});
+var elm$http$Http$subMap = F2(
+	function (func, _n0) {
+		var tracker = _n0.a;
+		var toMsg = _n0.b;
+		return A2(
+			elm$http$Http$MySub,
+			tracker,
+			A2(elm$core$Basics$composeR, toMsg, func));
+	});
+_Platform_effectManagers['Http'] = _Platform_createManager(elm$http$Http$init, elm$http$Http$onEffects, elm$http$Http$onSelfMsg, elm$http$Http$cmdMap, elm$http$Http$subMap);
+var elm$http$Http$command = _Platform_leaf('Http');
+var elm$http$Http$subscription = _Platform_leaf('Http');
+var elm$http$Http$request = function (r) {
+	return elm$http$Http$command(
+		elm$http$Http$Request(
+			{allowCookiesFromOtherDomains: false, body: r.body, expect: r.expect, headers: r.headers, method: r.method, timeout: r.timeout, tracker: r.tracker, url: r.url}));
+};
+var elm$http$Http$get = function (r) {
+	return elm$http$Http$request(
+		{body: elm$http$Http$emptyBody, expect: r.expect, headers: _List_Nil, method: 'GET', timeout: elm$core$Maybe$Nothing, tracker: elm$core$Maybe$Nothing, url: r.url});
+};
+var author$project$Main$initialModel = function (_n0) {
+	return _Utils_Tuple2(
+		{shapes: _List_Nil, zustand: author$project$Main$Success},
+		elm$http$Http$get(
+			{
+				expect: elm$http$Http$expectString(author$project$Main$GotText),
+				url: '/src/Maps/Aquarium.json'
+			}));
+};
+var elm$core$Platform$Sub$batch = _Platform_batch;
+var elm$core$Platform$Sub$none = elm$core$Platform$Sub$batch(_List_Nil);
+var author$project$Main$subscriptions = function (model) {
+	return elm$core$Platform$Sub$none;
+};
+var author$project$Main$Failure = {$: 'Failure'};
+var author$project$Main$jsondatei = '\r\n    [\r\n	{\r\n		"Pokedex No":"258",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"368 335,375 342,380 349,384 344,377 335,389 331,386 314,395 311,406 315,403 330,410 335,412 348,405 352,406 362,378 364,370 362,361 352,364 339"\r\n	}\r\n	,{\r\n		"Pokedex No":"728",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"507 351,514 351,523 349,538 350,540 336,530 336,528 332,542 324,540 316,533 319,525 316,525 309,532 304,534 296,543 288,554 286,568 289,577 296,585 293,592 300,591 306,586 308,589 316,590 322,585 324,581 323,578 331,587 341,580 339,591 349,610 353,609 360,588 358,576 351,572 351,570 357,561 358,557 363,539 361,510 358"\r\n	}\r\n	,{\r\n		"Pokedex No":"489",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"414 507,427 501,451 491,476 485,489 482,505 481,511 486,515 489,508 492,501 500,495 507,494 513,494 525,503 532,513 536,507 540,499 541,493 541,490 542,490 549,494 554,506 556,513 551,518 558,527 563,539 552,546 554,557 549,562 545,563 539,558 536,553 537,541 540,538 538,546 536,556 527,556 517,551 505,544 494,532 489,536 489,543 485,546 479,539 472,531 470,512 469,507 476,495 475,451 485,429 493,413 504,376 532"\r\n	}\r\n	,{\r\n		"Pokedex No":"393",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"670 275,671 281,683 283,687 280,695 278,692 273,697 263,693 251,700 253,703 244,702 231,694 221,685 216,673 216,664 224,660 236,662 240,664 252,660 256,657 265,660 269,668 270"\r\n	}\r\n	,{\r\n		"Pokedex No":"349",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"1252 943,1293 938,1330 963,1328 978,1338 979,1344 994,1378 994,1369 971,1412 967,1426 962,1425 950,1421 931,1408 887,1365 858,1373 827,1312 821,1325 870,1297 883,1282 855,1249 867,1241 911"\r\n	}\r\n	,{\r\n		"Pokedex No":"129",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"734 413,746 427,761 411,766 413,765 427,800 439,808 417,821 417,829 437,842 433,846 421,837 418,833 402,833 383,821 365,798 355,798 335,786 338,769 327,773 349,760 349,764 369,754 373,749 357,737 354,738 389"\r\n	}\r\n	,{\r\n		"Pokedex No":"129",\r\n		"Zusatzinfo":"s",\r\n		"Polygon points":"1480 514,1489 501,1522 513,1525 502,1541 501,1546 516,1554 516,1553 488,1558 481,1545 460,1529 456,1513 437,1494 468,1470 454,1473 481,1470 509"\r\n	}\r\n	,{\r\n		"Pokedex No":"79",\r\n		"Zusatzinfo":"",\r\n		"Polygon points":"930 393,934 401,940 397,953 400,962 401,969 397,974 401,985 401,989 393,1002 389,1002 373,994 361,978 357,966 360,958 356,945 360,946 349,960 341,958 336,936 333,925 364,928 377"\r\n	}\r\n]\r\n\r\n    ';
+var author$project$Main$Polygon = F3(
+	function (dexId, shiny, polypoints) {
+		return {dexId: dexId, polypoints: polypoints, shiny: shiny};
+	});
+var elm$json$Json$Decode$field = _Json_decodeField;
+var elm$json$Json$Decode$map3 = _Json_map3;
+var elm$json$Json$Decode$string = _Json_decodeString;
+var author$project$Main$readSinglePoly = A4(
+	elm$json$Json$Decode$map3,
+	author$project$Main$Polygon,
+	A2(elm$json$Json$Decode$field, 'Pokedex No', elm$json$Json$Decode$string),
+	A2(elm$json$Json$Decode$field, 'Zusatzinfo', elm$json$Json$Decode$string),
+	A2(elm$json$Json$Decode$field, 'Polygon points', elm$json$Json$Decode$string));
+var elm$json$Json$Decode$decodeString = _Json_runOnString;
+var elm$json$Json$Decode$list = _Json_decodeList;
+var author$project$Main$readPolys = function (str) {
+	var result = A2(
+		elm$json$Json$Decode$decodeString,
+		elm$json$Json$Decode$list(author$project$Main$readSinglePoly),
+		str);
+	if (result.$ === 'Ok') {
+		var wert = result.a;
+		return wert;
+	} else {
+		var error = result.a;
+		return _List_Nil;
+	}
+};
+var elm$core$Platform$Cmd$batch = _Platform_batch;
+var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
+var author$project$Main$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'PolyClicked':
+				var id = msg.a;
+				var info = msg.b;
+				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+			case 'ButtonClicked':
+				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+			default:
+				var res = msg.a;
+				if (res.$ === 'Ok') {
+					var jsonDatei = res.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								shapes: author$project$Main$readPolys(author$project$Main$jsondatei),
+								zustand: author$project$Main$Success
+							}),
+						elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{shapes: _List_Nil, zustand: author$project$Main$Failure}),
+						elm$core$Platform$Cmd$none);
+				}
+		}
+	});
+var elm$json$Json$Decode$map = _Json_map1;
+var elm$json$Json$Decode$map2 = _Json_map2;
+var elm$json$Json$Decode$succeed = _Json_succeed;
+var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
+	switch (handler.$) {
+		case 'Normal':
+			return 0;
+		case 'MayStopPropagation':
+			return 1;
+		case 'MayPreventDefault':
+			return 2;
+		default:
+			return 3;
+	}
+};
+var elm$html$Html$a = _VirtualDom_node('a');
+var elm$html$Html$div = _VirtualDom_node('div');
+var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
+var elm$json$Json$Encode$string = _Json_wrap;
+var elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			elm$json$Json$Encode$string(string));
+	});
+var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
+var author$project$Main$buttons = function (model) {
+	return A2(
+		elm$html$Html$div,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('nes-container is-rounded')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				elm$html$Html$a,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('nes-btn')
+					]),
+				_List_fromArray(
+					[
+						elm$html$Html$text('generate question')
+					]))
+			]));
+};
+var author$project$Main$PolyClicked = F2(
+	function (a, b) {
+		return {$: 'PolyClicked', a: a, b: b};
+	});
+var elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			elm$virtual_dom$VirtualDom$on,
+			event,
+			elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		elm$html$Html$Events$on,
+		'click',
+		elm$json$Json$Decode$succeed(msg));
+};
+var elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
+var elm$svg$Svg$polygon = elm$svg$Svg$trustedNode('polygon');
+var elm$svg$Svg$Attributes$class = _VirtualDom_attribute('class');
+var elm$svg$Svg$Attributes$points = _VirtualDom_attribute('points');
+var author$project$Main$svgPoly = function (poly) {
+	return A2(
+		elm$svg$Svg$polygon,
+		_List_fromArray(
+			[
+				elm$svg$Svg$Attributes$points(poly.polypoints),
+				elm$svg$Svg$Attributes$class('polygon'),
+				elm$html$Html$Events$onClick(
+				A2(author$project$Main$PolyClicked, poly.dexId, poly.shiny))
+			]),
+		_List_Nil);
+};
 var elm$core$List$map = F2(
 	function (f, xs) {
 		return A3(
@@ -4949,20 +6013,8 @@ var elm$core$List$map = F2(
 			_List_Nil,
 			xs);
 	});
-var elm$html$Html$div = _VirtualDom_node('div');
 var elm$html$Html$figure = _VirtualDom_node('figure');
 var elm$html$Html$section = _VirtualDom_node('section');
-var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
-var elm$json$Json$Encode$string = _Json_wrap;
-var elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			elm$json$Json$Encode$string(string));
-	});
-var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var elm$html$Html$Attributes$height = function (n) {
 	return A2(
 		_VirtualDom_attribute,
@@ -4990,84 +6042,85 @@ var elm$svg$Svg$Attributes$xlinkHref = function (value) {
 		'xlink:href',
 		_VirtualDom_noJavaScriptUri(value));
 };
-var author$project$Main$clickableImage = A2(
-	elm$html$Html$section,
-	_List_fromArray(
-		[
-			elm$html$Html$Attributes$class('section')
-		]),
-	_List_fromArray(
-		[
-			A2(
-			elm$html$Html$div,
-			_List_fromArray(
-				[
-					elm$html$Html$Attributes$class('container')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					elm$html$Html$figure,
-					_List_fromArray(
-						[
-							elm$html$Html$Attributes$class('image')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							elm$svg$Svg$svg,
-							_List_fromArray(
-								[
-									elm$svg$Svg$Attributes$class('viewBoxCenter'),
-									elm$svg$Svg$Attributes$width('80%'),
-									elm$svg$Svg$Attributes$viewBox('0 0 1920 1080'),
-									elm$svg$Svg$Attributes$version('1.1')
-								]),
-							_Utils_ap(
+var author$project$Main$clickableImage = function (model) {
+	return A2(
+		elm$html$Html$section,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('section')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				elm$html$Html$div,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('container')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						elm$html$Html$figure,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('image')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								elm$svg$Svg$svg,
 								_List_fromArray(
 									[
-										A2(
-										elm$svg$Svg$defs,
-										_List_Nil,
-										_List_fromArray(
-											[
-												A2(
-												elm$svg$Svg$style,
-												_List_Nil,
-												_List_fromArray(
-													[
-														elm$html$Html$text('   .viewBoxCenter {\r\n                                                    display: block;\r\n                                                    margin-left: auto;\r\n                                                    margin-right: auto;\r\n                                                    }\r\n                                                    \r\n                                        .polygon { \r\n                                                    fill: black;   \r\n                                                    fill-opacity:0;\r\n                                                }\r\n                                         .polygon:hover {\r\n                                                    fill: white;\r\n                                                    fill-opacity:0.02;\r\n                                        }')
-													]))
-											])),
-										A2(
-										elm$svg$Svg$image,
-										_List_fromArray(
-											[
-												elm$html$Html$Attributes$width(1920),
-												elm$html$Html$Attributes$height(1080),
-												elm$html$Html$Attributes$title('Aquarium'),
-												elm$svg$Svg$Attributes$xlinkHref('/src/Bilder/Aquarium.png')
-											]),
-										_List_Nil)
+										elm$svg$Svg$Attributes$class('viewBoxCenter'),
+										elm$svg$Svg$Attributes$width('100%'),
+										elm$svg$Svg$Attributes$viewBox('0 0 1920 1080'),
+										elm$svg$Svg$Attributes$version('1.1')
 									]),
-								A2(
-									elm$core$List$map,
-									author$project$Main$svgPoly,
-									author$project$Main$readPolys(author$project$Main$jsondatei))))
-						]))
-				]))
-		]));
+								_Utils_ap(
+									_List_fromArray(
+										[
+											A2(
+											elm$svg$Svg$defs,
+											_List_Nil,
+											_List_fromArray(
+												[
+													A2(
+													elm$svg$Svg$style,
+													_List_Nil,
+													_List_fromArray(
+														[
+															elm$html$Html$text('   .viewBoxCenter {\r\n                                                    display: block;\r\n                                                    margin-left: auto;\r\n                                                    margin-right: auto;\r\n                                                    }\r\n                                                    \r\n                                        .polygon { \r\n                                                    fill: black;   \r\n                                                    fill-opacity:0;\r\n                                                }\r\n                                         .polygon:hover {\r\n                                                    fill: white;\r\n                                                    fill-opacity:0.03;\r\n                                        }')
+														]))
+												])),
+											A2(
+											elm$svg$Svg$image,
+											_List_fromArray(
+												[
+													elm$html$Html$Attributes$width(1920),
+													elm$html$Html$Attributes$height(1080),
+													elm$html$Html$Attributes$title('Aquarium'),
+													elm$svg$Svg$Attributes$xlinkHref('/src/Bilder/Aquarium.png')
+												]),
+											_List_Nil)
+										]),
+									A2(elm$core$List$map, author$project$Main$svgPoly, model.shapes)))
+							]))
+					]))
+			]));
+};
 var author$project$Main$view = function (model) {
 	return A2(
 		elm$html$Html$div,
-		_List_Nil,
 		_List_fromArray(
-			[author$project$Main$clickableImage]));
+			[
+				elm$html$Html$Attributes$class('inhalt')
+			]),
+		_List_fromArray(
+			[
+				author$project$Main$buttons(model),
+				author$project$Main$clickableImage(model)
+			]));
 };
-var elm$core$Platform$Cmd$batch = _Platform_batch;
-var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
-var elm$core$Platform$Sub$batch = _Platform_batch;
-var elm$core$Platform$Sub$none = elm$core$Platform$Sub$batch(_List_Nil);
 var elm$browser$Browser$External = function (a) {
 	return {$: 'External', a: a};
 };
@@ -5089,9 +6142,7 @@ var elm$core$Basics$never = function (_n0) {
 var elm$core$Task$Perform = function (a) {
 	return {$: 'Perform', a: a};
 };
-var elm$core$Task$succeed = _Scheduler_succeed;
 var elm$core$Task$init = elm$core$Task$succeed(_Utils_Tuple0);
-var elm$core$Task$andThen = _Scheduler_andThen;
 var elm$core$Task$map = F2(
 	function (func, taskA) {
 		return A2(
@@ -5102,29 +6153,6 @@ var elm$core$Task$map = F2(
 			},
 			taskA);
 	});
-var elm$core$Task$map2 = F3(
-	function (func, taskA, taskB) {
-		return A2(
-			elm$core$Task$andThen,
-			function (a) {
-				return A2(
-					elm$core$Task$andThen,
-					function (b) {
-						return elm$core$Task$succeed(
-							A2(func, a, b));
-					},
-					taskB);
-			},
-			taskA);
-	});
-var elm$core$Task$sequence = function (tasks) {
-	return A3(
-		elm$core$List$foldr,
-		elm$core$Task$map2(elm$core$List$cons),
-		elm$core$Task$succeed(_List_Nil),
-		tasks);
-};
-var elm$core$Platform$sendToApp = _Platform_sendToApp;
 var elm$core$Task$spawnCmd = F2(
 	function (router, _n0) {
 		var task = _n0.a;
@@ -5294,25 +6322,8 @@ var elm$url$Url$fromString = function (str) {
 		elm$url$Url$Https,
 		A2(elm$core$String$dropLeft, 8, str)) : elm$core$Maybe$Nothing);
 };
-var elm$browser$Browser$sandbox = function (impl) {
-	return _Browser_element(
-		{
-			init: function (_n0) {
-				return _Utils_Tuple2(impl.init, elm$core$Platform$Cmd$none);
-			},
-			subscriptions: function (_n1) {
-				return elm$core$Platform$Sub$none;
-			},
-			update: F2(
-				function (msg, model) {
-					return _Utils_Tuple2(
-						A2(impl.update, msg, model),
-						elm$core$Platform$Cmd$none);
-				}),
-			view: impl.view
-		});
-};
-var author$project$Main$main = elm$browser$Browser$sandbox(
-	{init: author$project$Main$initialModel, update: author$project$Main$update, view: author$project$Main$view});
+var elm$browser$Browser$element = _Browser_element;
+var author$project$Main$main = elm$browser$Browser$element(
+	{init: author$project$Main$initialModel, subscriptions: author$project$Main$subscriptions, update: author$project$Main$update, view: author$project$Main$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
 	elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
