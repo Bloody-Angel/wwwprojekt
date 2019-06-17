@@ -26,13 +26,15 @@ main =
 type alias Model =
     {shapes : List(Polygon)
     ,zustand : Zustand
+    ,searchedPokeId : Maybe String
     }
 
 initialModel : () ->(Model ,Cmd Msg)
 initialModel _ =
     (
         {shapes = []
-        ,zustand = Success}
+        ,zustand = Success
+        ,searchedPokeId = Nothing}
         ,Http.get
             {url = "/src/Maps/Aquarium.json"
             ,expect = Http.expectString GotText
@@ -67,8 +69,12 @@ update msg model =
             (model, Cmd.none)
         PokeGenerateClicked ->
             (model, Random.generate PokeGenerated (zufallsID model))
-        PokeGenerated id ->
-            (model, Cmd.none)
+        PokeGenerated (id,liste)->
+            case id of 
+                Just value -> 
+                     ({model|searchedPokeId = id}, Cmd.none)
+                Nothing -> 
+                    ({model|zustand = Failure}, Cmd.none)
         GotText res ->
             case res of
                 Ok jsondatei -> 
@@ -162,3 +168,10 @@ zufallsID : Model -> Random.Generator (Maybe String, List String)
 zufallsID model =
     (choose (Set.toList (Set.fromList (List.map getID model.shapes))))
 
+ashsText : Model ->  String
+ashsText model =
+    case model.searchedPokeId of
+        Nothing -> 
+            "Hello, I'm Ash. If you want, I'll quiz you on you pokemon knowledge. Just klick the Button above me."
+        Just id ->
+            "Search for "++id++" in this picture."   
