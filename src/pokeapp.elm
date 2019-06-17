@@ -14,20 +14,38 @@ import Set
 import Random
 import Random.List exposing (choose)
 
+type alias Model 
+    =
+    {shapes : List(Polygon)
+    ,zustand : Zustand
+    ,searchedPokeId : Maybe String
+    }
+
+type Msg 
+    = PolyClicked String String --erster String: Pokedex ID, zweiter String: Zusatzinfo
+    | PokeGenerateClicked
+    | PokeGenerated (Maybe String, List String)
+    | GotText (Result Http.Error String) 
+
+type alias Polygon
+     =
+    {dexId : String 
+    ,shiny : String 
+    ,polypoints : String
+    }
+    
+type Zustand 
+    = Success
+    | Failure
+
 main : Program () Model Msg
 main =
     Browser.element
         { init = initialModel
         , view = view
         , update = update
-        ,subscriptions = subscriptions
+        , subscriptions = subscriptions
         }
-
-type alias Model =
-    {shapes : List(Polygon)
-    ,zustand : Zustand
-    ,searchedPokeId : Maybe String
-    }
 
 initialModel : () ->(Model ,Cmd Msg)
 initialModel _ =
@@ -44,22 +62,6 @@ initialModel _ =
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
-
-type Msg
-    = PolyClicked String String --erster String: Pokedex ID, zweiter String: Zusatzinfo
-    | PokeGenerateClicked
-    | PokeGenerated (Maybe String, List String)
-    | GotText (Result Http.Error String) 
-
-type alias Polygon = 
-    {dexId : String 
-    ,shiny : String 
-    ,polypoints : String
-    }
-    
-type Zustand 
-    = Success
-    | Failure
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -110,34 +112,15 @@ ashCatchThem str =
             ]
         ]
 
--- Decoder fuer json-Polygone zu Polygonen
-readSinglePoly : Decoder Polygon
-readSinglePoly =
-    Json.Decode.map3 Polygon
-        (Json.Decode.field "Pokedex No" Json.Decode.string)
-        (Json.Decode.field "Zusatzinfo" Json.Decode.string)
-        (Json.Decode.field "Polygon points" Json.Decode.string)
+ashsText : Model ->  String
+ashsText model =
+    case model.searchedPokeId of
+        Nothing -> 
+            "Hello, I'm Ash. If you want, I'll quiz you on you pokemon knowledge. Just klick the Button above me."
+        Just id ->
+            "Search for "++id++" in this picture."  
 
-
--- bekommt String (json Liste von  Polygonen) uebergeben, erstellt Liste von Polygonen
-readPolys : String -> List(Polygon)
-readPolys str = 
-    let result = Json.Decode.decodeString (Json.Decode.list readSinglePoly) str
-    in 
-        case result of
-            Ok wert ->
-                wert
-            Err error ->
-                []
-
-
---erstellt aus einem Polygon eine Html Msg mit einem svg polygon
-svgPoly : Polygon ->Svg.Svg Msg
-svgPoly poly= 
-    Svg.polygon[Svg.Attributes.points poly.polypoints, Svg.Attributes.class "polygon" , onClick (PolyClicked poly.dexId poly.shiny) ][]
-
-
-
+            
 --erstellt das Bild und die Polygone   
 clickableImage : Model -> Html Msg
 clickableImage model = 
@@ -172,6 +155,33 @@ clickableImage model =
             ]
         ]
 
+
+-- Decoder fuer json-Polygone zu Polygonen
+readSinglePoly : Decoder Polygon
+readSinglePoly =
+    Json.Decode.map3 Polygon
+        (Json.Decode.field "Pokedex No" Json.Decode.string)
+        (Json.Decode.field "Zusatzinfo" Json.Decode.string)
+        (Json.Decode.field "Polygon points" Json.Decode.string)
+
+
+-- bekommt String (json Liste von  Polygonen) uebergeben, erstellt Liste von Polygonen
+readPolys : String -> List(Polygon)
+readPolys str = 
+    let result = Json.Decode.decodeString (Json.Decode.list readSinglePoly) str
+    in 
+        case result of
+            Ok wert ->
+                wert
+            Err error ->
+                []
+
+--erstellt aus einem Polygon eine Html Msg mit einem svg polygon
+svgPoly : Polygon ->Svg.Svg Msg
+svgPoly poly= 
+    Svg.polygon[Svg.Attributes.points poly.polypoints, Svg.Attributes.class "polygon" , onClick (PolyClicked poly.dexId poly.shiny) ][]
+
+
 getID : Polygon -> String
 getID poly =
     poly.dexId
@@ -179,12 +189,5 @@ getID poly =
 zufallsID : Model -> Random.Generator (Maybe String, List String)
 zufallsID model =
     (choose (Set.toList (Set.fromList (List.map getID model.shapes))))
-
-ashsText : Model ->  String
-ashsText model =
-    case model.searchedPokeId of
-        Nothing -> 
-            "Hello, I'm Ash. If you want, I'll quiz you on you pokemon knowledge. Just klick the Button above me."
-        Just id ->
-            "Search for "++id++" in this picture."   
+ 
 
