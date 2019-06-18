@@ -18,7 +18,7 @@ type alias Model
     =
     {shapes : List(Polygon)
     ,zustand : Zustand
-    ,aktiveSuche : Maybe Suche
+    ,aufgabe : Aufgabe
     }
 
 type alias Polygon
@@ -32,13 +32,32 @@ type Zustand
     = Success
     | Failure
 
+type Aufgabe 
+    = Frage (Maybe Suche)
+    | Information (Maybe Pokemon)
+
 type alias Suche 
     =
     {searchedPokeId : String 
     ,foundIt : Maybe Bool
     ,pokeInfo : Maybe String
     }
-    
+type alias Pokemon 
+    =
+    {pokedex : String
+    ,name : String
+    ,types : List(String)
+    ,spriteurl : String
+    ,groesse : String
+    ,gewicht : String
+    --stats : List(String)
+    --,texts : List(String)
+    --,evolvesFrom : Maybe List(String)
+    --,evolvesTo : Maybe List(String)
+    }
+
+
+
 type Msg 
     = PolyClicked String String --erster String: Pokedex ID, zweiter String: Zusatzinfo
     | PokeGenerateClicked
@@ -60,7 +79,7 @@ initialModel _ =
     (
         {shapes = []
         ,zustand = Success
-        ,aktiveSuche = Nothing}
+        ,aufgabe = (Frage Nothing)}
         ,Http.get
             {url = "/src/Maps/Aquarium.json"
             ,expect = Http.expectString GotImageMap
@@ -75,11 +94,16 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         PolyClicked id info->
-            case model.aktiveSuche of
-                Nothing ->
-                    (model, Cmd.none)
-                Just aktiveSuche ->
-                    updatePolyClicked model id aktiveSuche
+            case model.aufgabe of
+                Frage suche -> 
+                    case suche of
+                        Nothing ->
+                            (model, Cmd.none)
+                        Just aktiveSuche ->
+                            updatePolyClicked model id aktiveSuche
+                Information pokemon -> 
+                    --TODO
+                    (model,Cmd.none)
 
         PokeGenerateClicked ->
             (model, Random.generate PokeGenerated (zufallsID model))
@@ -98,7 +122,7 @@ updatePokeGenerated: Model -> Maybe String-> (Model,Cmd Msg)
 updatePokeGenerated model id=
     case id of 
         Just value -> 
-            ({model|aktiveSuche = Just {searchedPokeId=value, foundIt=Nothing, pokeInfo=Nothing}}
+            ({model|aufgabe = Frage (Just {searchedPokeId=value, foundIt=Nothing, pokeInfo=Nothing})}
             , Http.get
                 {url = "https://pokeapi.co/api/v2/pokemon/"++value
                 ,expect = Http.expectString GotPokemonInfo
@@ -111,15 +135,18 @@ updateGotPokeInfo: Model -> Result Http.Error String ->(Model, Cmd Msg)
 updateGotPokeInfo model infojson=
     case infojson of
         Ok jsondatei -> 
-            case model.aktiveSuche of
-                    Nothing ->
+            case model.aufgabe of
+                    Frage Nothing ->
                         ({model|zustand = Failure}, Cmd.none)
-                    Just value -> 
+                    Frage (Just value) -> 
                         let 
                             oldaktiveSuche = value
                             newaktiveSuche = {oldaktiveSuche | pokeInfo=Just jsondatei}
                         in
-                            ({model|aktiveSuche = Just newaktiveSuche} ,Cmd.none)
+                            ({model|aufgabe = Frage (Just newaktiveSuche)} ,Cmd.none)
+                    _ ->
+                        (model, Cmd.none)
+                        --TODO
         Err _ ->
             ({model|shapes = [], zustand = Failure}, Cmd.none)
 
@@ -129,12 +156,12 @@ updatePolyClicked model id suche =
         let 
             newaktiveSuche = {suche | foundIt=Just True}
         in           
-            ({model|aktiveSuche = Just newaktiveSuche} ,Cmd.none)
+            ({model|aufgabe = Frage (Just newaktiveSuche)} ,Cmd.none)
     else
         let 
             newaktiveSuche = {suche | foundIt=Just False}
         in           
-            ({model|aktiveSuche = Just newaktiveSuche} ,Cmd.none)
+            ({model|aufgabe = Frage (Just newaktiveSuche)} ,Cmd.none)
 
 
 view : Model -> Html Msg
@@ -171,10 +198,10 @@ ashsText model =
         Failure ->
             "Oh, seems like an error happened somewhere."
         Success -> 
-            case model.aktiveSuche of
-                Nothing -> 
+            case model.aufgabe of
+                Frage Nothing -> 
                     "Hello, I'm Ash. If you want, I'll quiz you on your pokemon knowledge. Just klick the Button above me."
-                Just suche ->
+                Frage (Just suche) ->
                     case suche.foundIt of
                         Nothing -> 
                             case suche.pokeInfo of
@@ -190,6 +217,9 @@ ashsText model =
                                     "Oh, that's not "++(getPokeName (str))++ ", but you can try again."  
                                 Nothing ->
                                     "Hmmm..."
+                _ -> 
+                    ""
+                    --TODO
                             
 
 --erstellt das Bild und die Polygone   
