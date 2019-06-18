@@ -151,11 +151,20 @@ ashsText model =
                 Just suche ->
                     case suche.foundIt of
                         Nothing -> 
-                            "Search for "++suche.searchedPokeId++" in this picture."  
+                            case suche.pokeInfo of
+                                Just str ->
+                                    "Search for "++(getPokeName (str))++" in this picture."  
+                                Nothing ->
+                                    "Hmmm..."
                         Just True ->
                             "Great, that's right!"
                         Just False ->
-                            "Oh, that's not "++suche.searchedPokeId++ ", but you can try again."
+                            case suche.pokeInfo of
+                                Just str ->
+                                    "Oh, that's not "++(getPokeName (str))++ ", but you can try again."  
+                                Nothing ->
+                                    "Hmmm..."
+                            
 
 --erstellt das Bild und die Polygone   
 clickableImage : Model -> Html Msg
@@ -227,3 +236,13 @@ zufallsID model =
     (choose (Set.toList (Set.fromList (List.map getID model.shapes))))
  
 
+getPokeName : String -> String
+getPokeName str = 
+    let result = Json.Decode.decodeString (Json.Decode.field "name" Json.Decode.string) str
+    in 
+        case result of
+            Ok wert ->
+                wert
+            Err error ->
+                ""
+    
