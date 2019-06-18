@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, button, div, text, section)
+import Html exposing (Html, button, div, text, section, a)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (class)
 import Svg exposing (svg, image)
@@ -14,28 +14,56 @@ import Set
 import Random
 import Random.List exposing (choose)
 
+type alias Model 
+    =
+    {shapes : List(Polygon)
+    ,zustand : Zustand
+    ,aktiveSuche : Maybe Suche
+    }
+
+type alias Polygon
+     =
+    {dexId : String 
+    ,shiny : String 
+    ,polypoints : String
+    }
+
+type Zustand 
+    = Success
+    | Failure
+
+type alias Suche 
+    =
+    {searchedPokeId : String 
+    ,foundIt : Maybe Bool
+    ,pokeInfo : Maybe String
+    }
+    
+type Msg 
+    = PolyClicked String String --erster String: Pokedex ID, zweiter String: Zusatzinfo
+    | PokeGenerateClicked
+    | PokeGenerated (Maybe String, List String)
+    | GotPokemonInfo (Result Http.Error String)
+    | GotImageMap (Result Http.Error String) 
+
 main : Program () Model Msg
 main =
     Browser.element
         { init = initialModel
         , view = view
         , update = update
-        ,subscriptions = subscriptions
+        , subscriptions = subscriptions
         }
-
-type alias Model =
-    {shapes : List(Polygon)
-    ,zustand : Zustand
-    }
 
 initialModel : () ->(Model ,Cmd Msg)
 initialModel _ =
     (
         {shapes = []
-        ,zustand = Success}
+        ,zustand = Success
+        ,aktiveSuche = Nothing}
         ,Http.get
             {url = "/src/Maps/Aquarium.json"
-            ,expect = Http.expectString GotText
+            ,expect = Http.expectString GotImageMap
             }
     )
 
@@ -43,126 +71,134 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-jsondatei : String
-jsondatei =
-    """
-    [
-	{
-		"Pokedex No":"258",
-		"Zusatzinfo":"",
-		"Polygon points":"368 335,375 342,380 349,384 344,377 335,389 331,386 314,395 311,406 315,403 330,410 335,412 348,405 352,406 362,378 364,370 362,361 352,364 339"
-	}
-	,{
-		"Pokedex No":"728",
-		"Zusatzinfo":"",
-		"Polygon points":"507 351,514 351,523 349,538 350,540 336,530 336,528 332,542 324,540 316,533 319,525 316,525 309,532 304,534 296,543 288,554 286,568 289,577 296,585 293,592 300,591 306,586 308,589 316,590 322,585 324,581 323,578 331,587 341,580 339,591 349,610 353,609 360,588 358,576 351,572 351,570 357,561 358,557 363,539 361,510 358"
-	}
-	,{
-		"Pokedex No":"489",
-		"Zusatzinfo":"",
-		"Polygon points":"414 507,427 501,451 491,476 485,489 482,505 481,511 486,515 489,508 492,501 500,495 507,494 513,494 525,503 532,513 536,507 540,499 541,493 541,490 542,490 549,494 554,506 556,513 551,518 558,527 563,539 552,546 554,557 549,562 545,563 539,558 536,553 537,541 540,538 538,546 536,556 527,556 517,551 505,544 494,532 489,536 489,543 485,546 479,539 472,531 470,512 469,507 476,495 475,451 485,429 493,413 504,376 532"
-	}
-	,{
-		"Pokedex No":"393",
-		"Zusatzinfo":"",
-		"Polygon points":"670 275,671 281,683 283,687 280,695 278,692 273,697 263,693 251,700 253,703 244,702 231,694 221,685 216,673 216,664 224,660 236,662 240,664 252,660 256,657 265,660 269,668 270"
-	}
-	,{
-		"Pokedex No":"349",
-		"Zusatzinfo":"",
-		"Polygon points":"1252 943,1293 938,1330 963,1328 978,1338 979,1344 994,1378 994,1369 971,1412 967,1426 962,1425 950,1421 931,1408 887,1365 858,1373 827,1312 821,1325 870,1297 883,1282 855,1249 867,1241 911"
-	}
-	,{
-		"Pokedex No":"129",
-		"Zusatzinfo":"",
-		"Polygon points":"734 413,746 427,761 411,766 413,765 427,800 439,808 417,821 417,829 437,842 433,846 421,837 418,833 402,833 383,821 365,798 355,798 335,786 338,769 327,773 349,760 349,764 369,754 373,749 357,737 354,738 389"
-	}
-	,{
-		"Pokedex No":"129",
-		"Zusatzinfo":"s",
-		"Polygon points":"1480 514,1489 501,1522 513,1525 502,1541 501,1546 516,1554 516,1553 488,1558 481,1545 460,1529 456,1513 437,1494 468,1470 454,1473 481,1470 509"
-	}
-	,{
-		"Pokedex No":"79",
-		"Zusatzinfo":"",
-		"Polygon points":"930 393,934 401,940 397,953 400,962 401,969 397,974 401,985 401,989 393,1002 389,1002 373,994 361,978 357,966 360,958 356,945 360,946 349,960 341,958 336,936 333,925 364,928 377"
-	}
-]
-
-    """
-
-type Msg
-    = PolyClicked String String --erster String: Pokedex ID, zweiter String: Zusatzinfo
-    | ButtonClicked
-    | GotText (Result Http.Error String) 
-
-type alias Polygon = 
-    {dexId : String 
-    ,shiny : String 
-    ,polypoints : String
-    }
-    
-type Zustand 
-    = Success
-    | Failure
-
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         PolyClicked id info->
-            --TODO
-            (model, Cmd.none)
-        ButtonClicked ->
-            --TODO
-            (model, Cmd.none)
-        GotText res ->
+            case model.aktiveSuche of
+                Nothing ->
+                    (model, Cmd.none)
+                Just aktiveSuche ->
+                    updatePolyClicked model id aktiveSuche
+
+        PokeGenerateClicked ->
+            (model, Random.generate PokeGenerated (zufallsID model))
+        PokeGenerated (id,liste)->
+            updatePokeGenerated model id
+        GotPokemonInfo infojson ->
+            updateGotPokeInfo model infojson
+        GotImageMap res ->
             case res of
-                Ok jsonDatei -> 
+                Ok jsondatei -> 
                     ({model|shapes = readPolys jsondatei, zustand = Success}, Cmd.none)
                 Err _ ->
                     ({model|shapes = [], zustand = Failure}, Cmd.none)
 
+updatePokeGenerated: Model -> Maybe String-> (Model,Cmd Msg)
+updatePokeGenerated model id=
+    case id of 
+        Just value -> 
+            ({model|aktiveSuche = Just {searchedPokeId=value, foundIt=Nothing, pokeInfo=Nothing}}
+            , Http.get
+                {url = "https://pokeapi.co/api/v2/pokemon/"++value
+                ,expect = Http.expectString GotPokemonInfo
+                }
+            )
+        Nothing -> 
+            ({model|zustand = Failure}, Cmd.none)
+
+updateGotPokeInfo: Model -> Result Http.Error String ->(Model, Cmd Msg)
+updateGotPokeInfo model infojson=
+    case infojson of
+        Ok jsondatei -> 
+            case model.aktiveSuche of
+                    Nothing ->
+                        ({model|zustand = Failure}, Cmd.none)
+                    Just value -> 
+                        let 
+                            oldaktiveSuche = value
+                            newaktiveSuche = {oldaktiveSuche | pokeInfo=Just jsondatei}
+                        in
+                            ({model|aktiveSuche = Just newaktiveSuche} ,Cmd.none)
+        Err _ ->
+            ({model|shapes = [], zustand = Failure}, Cmd.none)
+
+updatePolyClicked: Model -> String -> Suche -> (Model, Cmd Msg)
+updatePolyClicked model id suche =
+    if id ==suche.searchedPokeId then
+        let 
+            newaktiveSuche = {suche | foundIt=Just True}
+        in           
+            ({model|aktiveSuche = Just newaktiveSuche} ,Cmd.none)
+    else
+        let 
+            newaktiveSuche = {suche | foundIt=Just False}
+        in           
+            ({model|aktiveSuche = Just newaktiveSuche} ,Cmd.none)
+
+
 view : Model -> Html Msg
 view model =
-    div []
-        [clickableImage model
+    div [class "inhalt"]
+        [buttons model
+        ,ashCatchThem (ashsText model)
+        ,clickableImage model
         ]
 
--- Decoder fuer json-Polygone zu Polygonen
-readSinglePoly : Decoder Polygon
-readSinglePoly =
-    Json.Decode.map3 Polygon
-        (Json.Decode.field "Pokedex No" Json.Decode.string)
-        (Json.Decode.field "Zusatzinfo" Json.Decode.string)
-        (Json.Decode.field "Polygon points" Json.Decode.string)
+buttons : Model -> Html Msg
+buttons model =
+    div [class "nes-container is-rounded inhaltsElemente"
+        ]
+        [a  [class "nes-btn", onClick PokeGenerateClicked] 
+            [text "Ask me a question!"
+            ]
+        ]
 
+ashCatchThem : String -> Html Msg
+ashCatchThem str =
+    section [class "message-list inhaltsElemente"]  
+        [section [class "message -left"]
+            [Html.i [class "nes-ash ash"] []
+            ,div    [class "nes-balloon from-left balloon"] 
+                    [Html.p [] [text str]
+                    ]
+            ]
+        ]
 
--- bekommt String (json Liste von  Polygonen) uebergeben, erstellt Liste von Polygonen
-readPolys : String -> List(Polygon)
-readPolys str = 
-    let result = Json.Decode.decodeString (Json.Decode.list readSinglePoly) str
-    in 
-        case result of
-            Ok wert ->
-                wert
-            Err error ->
-                []
-
-
---erstellt aus einem Polygon eine Html Msg mit einem svg polygon
-svgPoly : Polygon ->Svg.Svg Msg
-svgPoly poly= 
-    Svg.polygon[Svg.Attributes.points poly.polypoints, Svg.Attributes.class "polygon" , onClick (PolyClicked poly.dexId poly.shiny) ][]
-
-
+ashsText : Model ->  String
+ashsText model =
+    case model.zustand of
+        Failure ->
+            "Oh, seems like an error happened somewhere."
+        Success -> 
+            case model.aktiveSuche of
+                Nothing -> 
+                    "Hello, I'm Ash. If you want, I'll quiz you on your pokemon knowledge. Just klick the Button above me."
+                Just suche ->
+                    case suche.foundIt of
+                        Nothing -> 
+                            case suche.pokeInfo of
+                                Just str ->
+                                    "Search for "++(getPokeName (str))++" in this picture."  
+                                Nothing ->
+                                    "Hmmm..."
+                        Just True ->
+                            "Great, that's right!"
+                        Just False ->
+                            case suche.pokeInfo of
+                                Just str ->
+                                    "Oh, that's not "++(getPokeName (str))++ ", but you can try again."  
+                                Nothing ->
+                                    "Hmmm..."
+                            
 
 --erstellt das Bild und die Polygone   
 clickableImage : Model -> Html Msg
 clickableImage model = 
-    section[ class "section" ]
-        [div [ class "container" ]
+    section [class "section inhaltsElemente"]
+        [div [class "container"]
             [Html.figure [ class "image" ]
-                [svg [Svg.Attributes.class "viewBoxCenter", Svg.Attributes.width "80%", viewBox "0 0 1920 1080", version "1.1"]
+                [svg [Svg.Attributes.class "viewBoxCenter", Svg.Attributes.width "100%", viewBox "0 0 1920 1080", version "1.1"]
                     ([Svg.defs[]
                         [Svg.style[]
                             --css für mittige viewBox
@@ -189,12 +225,50 @@ clickableImage model =
                 ]
             ]
         ]
-{-
+
+
+-- Decoder fuer json-Polygone zu Polygonen
+readSinglePoly : Decoder Polygon
+readSinglePoly =
+    Json.Decode.map3 Polygon
+        (Json.Decode.field "Pokedex No" Json.Decode.string)
+        (Json.Decode.field "Zusatzinfo" Json.Decode.string)
+        (Json.Decode.field "Polygon points" Json.Decode.string)
+
+
+-- bekommt String (json Liste von  Polygonen) uebergeben, erstellt Liste von Polygonen
+readPolys : String -> List(Polygon)
+readPolys str = 
+    let result = Json.Decode.decodeString (Json.Decode.list readSinglePoly) str
+    in 
+        case result of
+            Ok wert ->
+                wert
+            Err error ->
+                []
+
+--erstellt aus einem Polygon eine Html Msg mit einem svg polygon
+svgPoly : Polygon ->Svg.Svg Msg
+svgPoly poly= 
+    Svg.polygon[Svg.Attributes.points poly.polypoints, Svg.Attributes.class "polygon" , onClick (PolyClicked poly.dexId poly.shiny) ][]
+
+
 getID : Polygon -> String
 getID poly =
     poly.dexId
 
-zufallsID : Model -> String
+zufallsID : Model -> Random.Generator (Maybe String, List String)
 zufallsID model =
-    toStr (choose (Set.toList (Set.fromList (List.map getID model.shapes))))
--}
+    (choose (Set.toList (Set.fromList (List.map getID model.shapes))))
+ 
+
+getPokeName : String -> String
+getPokeName str = 
+    let result = Json.Decode.decodeString (Json.Decode.field "name" Json.Decode.string) str
+    in 
+        case result of
+            Ok wert ->
+                wert
+            Err error ->
+                ""
+    
