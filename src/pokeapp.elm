@@ -75,8 +75,12 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         PolyClicked id info->
-            --TODO
-            (model, Cmd.none)
+            case model.aktiveSuche of
+                Nothing ->
+                    (model, Cmd.none)
+                Just aktiveSuche ->
+                    updatePolyClicked model id aktiveSuche
+
         PokeGenerateClicked ->
             (model, Random.generate PokeGenerated (zufallsID model))
         PokeGenerated (id,liste)->
@@ -119,11 +123,18 @@ updateGotPokeInfo model infojson=
         Err _ ->
             ({model|shapes = [], zustand = Failure}, Cmd.none)
 
-
-
-
-
-
+updatePolyClicked: Model -> String -> Suche -> (Model, Cmd Msg)
+updatePolyClicked model id suche =
+    if id ==suche.searchedPokeId then
+        let 
+            newaktiveSuche = {suche | foundIt=Just True}
+        in           
+            ({model|aktiveSuche = Just newaktiveSuche} ,Cmd.none)
+    else
+        let 
+            newaktiveSuche = {suche | foundIt=Just False}
+        in           
+            ({model|aktiveSuche = Just newaktiveSuche} ,Cmd.none)
 
 
 view : Model -> Html Msg
