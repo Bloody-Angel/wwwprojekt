@@ -80,36 +80,51 @@ update msg model =
         PokeGenerateClicked ->
             (model, Random.generate PokeGenerated (zufallsID model))
         PokeGenerated (id,liste)->
-            case id of 
-                Just value -> 
-                    ({model|aktiveSuche = Just {searchedPokeId=value, foundIt=Nothing, pokeInfo=Nothing}}
-                    , Http.get
-                        {url = "https://pokeapi.co/api/v2/pokemon/"++value
-                        ,expect = Http.expectString GotPokemonInfo
-                        }
-                    )
-                Nothing -> 
-                    ({model|zustand = Failure}, Cmd.none)
+            updatePokeGenerated model id
         GotPokemonInfo infojson ->
-            case infojson of
-                Ok jsondatei -> 
-                    case model.aktiveSuche of
-                            Nothing ->
-                                ({model|zustand = Failure}, Cmd.none)
-                            Just value -> 
-                                let 
-                                    oldaktiveSuche = value
-                                    newaktiveSuche = {oldaktiveSuche | pokeInfo=Just jsondatei}
-                                in
-                                    ({model|aktiveSuche = Just newaktiveSuche} ,Cmd.none)
-                Err _ ->
-                    ({model|shapes = [], zustand = Failure}, Cmd.none)
+            updateGotPokeInfo model infojson
         GotImageMap res ->
             case res of
                 Ok jsondatei -> 
                     ({model|shapes = readPolys jsondatei, zustand = Success}, Cmd.none)
                 Err _ ->
                     ({model|shapes = [], zustand = Failure}, Cmd.none)
+
+updatePokeGenerated: Model -> Maybe String-> (Model,Cmd Msg)
+updatePokeGenerated model id=
+    case id of 
+        Just value -> 
+            ({model|aktiveSuche = Just {searchedPokeId=value, foundIt=Nothing, pokeInfo=Nothing}}
+            , Http.get
+                {url = "https://pokeapi.co/api/v2/pokemon/"++value
+                ,expect = Http.expectString GotPokemonInfo
+                }
+            )
+        Nothing -> 
+            ({model|zustand = Failure}, Cmd.none)
+
+updateGotPokeInfo: Model -> Result Http.Error String ->(Model, Cmd Msg)
+updateGotPokeInfo model infojson=
+    case infojson of
+        Ok jsondatei -> 
+            case model.aktiveSuche of
+                    Nothing ->
+                        ({model|zustand = Failure}, Cmd.none)
+                    Just value -> 
+                        let 
+                            oldaktiveSuche = value
+                            newaktiveSuche = {oldaktiveSuche | pokeInfo=Just jsondatei}
+                        in
+                            ({model|aktiveSuche = Just newaktiveSuche} ,Cmd.none)
+        Err _ ->
+            ({model|shapes = [], zustand = Failure}, Cmd.none)
+
+
+
+
+
+
+
 
 view : Model -> Html Msg
 view model =
