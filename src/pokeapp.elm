@@ -40,16 +40,16 @@ type alias Suche
     =
     {searchedPokeId : String 
     ,foundIt : Maybe Bool
-    ,pokeInfo : Maybe String
+    ,poke : Maybe Pokemon
     }
 type alias Pokemon 
     =
-    {pokedex : String
+    {pokedex : Int
     ,name : String
     ,types : List(String)
     ,spriteurl : String
-    ,groesse : String
-    ,gewicht : String
+    ,groesse : Int
+    ,gewicht : Int
     --stats : List(String)
     --,texts : List(String)
     --,evolvesFrom : Maybe List(String)
@@ -122,7 +122,7 @@ updatePokeGenerated: Model -> Maybe String-> (Model,Cmd Msg)
 updatePokeGenerated model id=
     case id of 
         Just value -> 
-            ({model|aufgabe = Frage (Just {searchedPokeId=value, foundIt=Nothing, pokeInfo=Nothing})}
+            ({model|aufgabe = Frage (Just {searchedPokeId=value, foundIt=Nothing, poke=Nothing})}
             , Http.get
                 {url = "https://pokeapi.co/api/v2/pokemon/"++value
                 ,expect = Http.expectString GotPokemonInfo
@@ -141,9 +141,19 @@ updateGotPokeInfo model infojson=
                     Frage (Just value) -> 
                         let 
                             oldaktiveSuche = value
-                            newaktiveSuche = {oldaktiveSuche | pokeInfo=Just jsondatei}
-                        in
-                            ({model|aufgabe = Frage (Just newaktiveSuche)} ,Cmd.none)
+                            poke = Json.Decode.decodeString readSinglePokemon jsondatei
+                            newaktiveSuche = 
+                                case poke of
+                                    Ok pokemon ->
+                                        {oldaktiveSuche | poke = Just pokemon}
+                                    Err error ->
+                                        oldaktiveSuche
+                        in 
+                            case poke of 
+                                Ok wert ->
+                                    ({model|aufgabe = Frage (Just newaktiveSuche)} ,Cmd.none)
+                                Err error ->
+                                    ({model|zustand = Failure}, Cmd.none)
                     _ ->
                         (model, Cmd.none)
                         --TODO
@@ -204,17 +214,17 @@ ashsText model =
                 Frage (Just suche) ->
                     case suche.foundIt of
                         Nothing -> 
-                            case suche.pokeInfo of
-                                Just str ->
-                                    "Search for "++(getPokeName (str))++" in this picture."  
+                            case suche.poke of
+                                Just pokemon -> 
+                                    "Search for "++(pokemon.name)++" in this picture."  
                                 Nothing ->
                                     "Hmmm..."
                         Just True ->
                             "Great, that's right!"
                         Just False ->
-                            case suche.pokeInfo of
-                                Just str ->
-                                    "Oh, that's not "++(getPokeName (str))++ ", but you can try again."  
+                            case suche.poke of
+                                Just pokemon ->
+                                    "Oh, that's not "++(pokemon.name)++ ", but you can try again."  
                                 Nothing ->
                                     "Hmmm..."
                 _ -> 
@@ -265,7 +275,6 @@ readSinglePoly =
         (Json.Decode.field "Zusatzinfo" Json.Decode.string)
         (Json.Decode.field "Polygon points" Json.Decode.string)
 
-
 -- bekommt String (json Liste von  Polygonen) uebergeben, erstellt Liste von Polygonen
 readPolys : String -> List(Polygon)
 readPolys str = 
@@ -302,3 +311,29 @@ getPokeName str =
             Err error ->
                 ""
     
+-- Decoder fuer json-Pokemon zu Pokemon
+readSinglePokemon : Decoder Pokemon
+readSinglePokemon =
+    Json.Decode.map6 Pokemon
+        (Json.Decode.field "id" Json.Decode.int)
+        (Json.Decode.field "name" Json.Decode.string)
+        (Json.Decode.field "types" (Json.Decode.list (Json.Decode.field "type" (Json.Decode.field "name" Json.Decode.string))))
+        (Json.Decode.at ["sprites", "front_default"] Json.Decode.string)
+        --(Json.Decode.field "sprites" (Json.Decode.field "front_default" Json.Decode.string))
+        (Json.Decode.field "height" Json.Decode.int)
+        (Json.Decode.field "weight" Json.Decode.int)
+
+readTypes : Decoder String
+readTypes =
+    (Json.Decode.field "type" (Json.Decode.field "name" Json.Decode.string))           
+
+-- bekommt String (json Liste von  Pokemon) uebergeben, erstellt Liste von Pokemon
+readPokemons : String -> List(Pokemon)
+readPokemons str = 
+    let result = Json.Decode.decodeString (Json.Decode.list readSinglePokemon) str
+    in 
+        case result of
+            Ok wert ->
+                wert
+            Err error ->
+                []
