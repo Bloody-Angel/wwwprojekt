@@ -195,7 +195,7 @@ buttons model =
                                     ,Html.option [Html.Attributes.value "Frage"] [text "Ask me something about Pokemon."]
                                     ,Html.option [Html.Attributes.value "Info"] [text "Tell me something about Pokemon."]
                                     ]]
-        ,a  [class "nes-btn", onClick PokeGenerateClicked] 
+        ,a  [class "nes-btn distance", onClick PokeGenerateClicked] 
             [text "Ask me a question!"
             ]
         ]
@@ -267,7 +267,7 @@ clickableImage model =
                                         }"""
                             ]        
                         ]
-                    ,image [ Html.Attributes.width 1920, Html.Attributes.height 1080, Html.Attributes.title "Aquarium", Svg.Attributes.xlinkHref "/src/Bilder/Aquarium.png" ] []
+                    ,image [ Html.Attributes.width 1920, Html.Attributes.height 1080, Html.Attributes.title "Aquarium", Svg.Attributes.xlinkHref "./src/Bilder/Aquarium.png" ] []
                     ]
                     ++(List.map svgPoly model.shapes)
                     )
