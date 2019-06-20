@@ -184,9 +184,18 @@ view model =
 
 buttons : Model -> Html Msg
 buttons model =
-    div [class "nes-container is-rounded inhaltsElemente"
-        ]
-        [a  [class "nes-btn", onClick PokeGenerateClicked] 
+    div [class "nes-container is-rounded inhaltsElemente"]
+        [div [class "nes-select"] [Html.select [Html.Attributes.id "Tasks select."] 
+                                    [Html.option 
+                                        [Html.Attributes.value ""
+                                        ,Html.Attributes.disabled True
+                                        ,Html.Attributes.selected True
+                                        ,Html.Attributes.hidden True
+                                        ] [text "What should i do?"]
+                                    ,Html.option [Html.Attributes.value "Frage"] [text "Ask me something about Pokemon."]
+                                    ,Html.option [Html.Attributes.value "Info"] [text "Tell me something about Pokemon."]
+                                    ]]
+        ,a  [class "nes-btn", onClick PokeGenerateClicked] 
             [text "Ask me a question!"
             ]
         ]
